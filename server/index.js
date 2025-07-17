@@ -103,32 +103,32 @@ const generatePDF = async (invoice) => {
     }
 
     // Header with logo
-    doc.fontSize(24).font('Helvetica-Bold').text('PALM CAFE', { align: 'center' });
+    doc.fontSize(24).font('Helvetica-Bold').fill('#153059').text('PALM CAFE', { align: 'center' });
     doc.moveDown(0.5);
-    doc.fontSize(14).font('Helvetica').text('INVOICE', { align: 'center' });
+    doc.fontSize(14).font('Helvetica').fill('#75826b').text('INVOICE', { align: 'center' });
     doc.moveDown();
 
     // Invoice details
-    doc.fontSize(12).font('Helvetica-Bold').text(`Invoice #: ${invoice.invoice_number}`);
-    doc.fontSize(10).font('Helvetica').text(`Date: ${new Date(invoice.date).toLocaleDateString()}`);
-    doc.fontSize(10).font('Helvetica').text(`Time: ${new Date(invoice.date).toLocaleTimeString()}`);
+    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text(`Invoice #: ${invoice.invoice_number || invoice.invoiceNumber}`);
+    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Date: ${new Date(invoice.date).toLocaleDateString()}`);
+    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Time: ${new Date(invoice.date).toLocaleTimeString()}`);
     doc.moveDown();
 
     // Customer info
-    doc.fontSize(12).font('Helvetica-Bold').text('Customer Information:');
-    doc.fontSize(10).font('Helvetica').text(`Name: ${invoice.customer_name}`);
-    if (invoice.customer_phone) {
-      doc.fontSize(10).font('Helvetica').text(`Phone: ${invoice.customer_phone}`);
+    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text('Customer Information:');
+    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Name: ${invoice.customerName || invoice.customer_name || ''}`);
+    if (invoice.customerPhone || invoice.customer_phone) {
+      doc.fontSize(10).font('Helvetica').fill('#153059').text(`Phone: ${invoice.customerPhone || invoice.customer_phone}`);
     }
     doc.moveDown();
 
     // Items table
-    doc.fontSize(12).font('Helvetica-Bold').text('Items:');
+    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text('Items:');
     doc.moveDown(0.5);
 
     // Table header
     const tableTop = doc.y;
-    doc.fontSize(10).font('Helvetica-Bold');
+    doc.fontSize(10).font('Helvetica-Bold').fill('#75826b');
     doc.text('Item', 50, tableTop);
     doc.text('Qty', 250, tableTop);
     doc.text('Price', 300, tableTop);
@@ -136,42 +136,40 @@ const generatePDF = async (invoice) => {
 
     // Table content
     let yPosition = tableTop + 20;
-    doc.fontSize(10).font('Helvetica');
+    doc.fontSize(10).font('Helvetica').fill('#153059');
     
-    invoice.items.forEach((item, index) => {
+    (invoice.items || []).forEach((item, index) => {
       if (yPosition > 700) {
         doc.addPage();
         yPosition = 50;
       }
-      
-      doc.text(item.item_name, 50, yPosition);
+      doc.text(item.name || item.item_name, 50, yPosition);
       doc.text(item.quantity.toString(), 250, yPosition);
-      doc.text(`${currencySymbol}${parseFloat(item.price).toFixed(2)}`, 300, yPosition);
-      doc.text(`${currencySymbol}${parseFloat(item.total).toFixed(2)}`, 380, yPosition);
+      doc.text(`${String(currencySymbol)}${parseFloat(item.price).toFixed(2)}`, 300, yPosition);
+      doc.text(`${String(currencySymbol)}${parseFloat(item.total).toFixed(2)}`, 380, yPosition);
       yPosition += 20;
     });
 
     // Totals section
     doc.moveDown();
     const totalsY = doc.y;
-    
-    doc.fontSize(10).font('Helvetica');
+    doc.fontSize(10).font('Helvetica').fill('#153059');
     doc.text('Subtotal:', 300, totalsY);
-    doc.text(`${currencySymbol}${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
+    doc.text(`${String(currencySymbol)}${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
     
     if (parseFloat(invoice.tax_amount) > 0) {
       doc.text('Tax:', 300, totalsY + 20);
-      doc.text(`${currencySymbol}${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
+      doc.text(`${String(currencySymbol)}${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
     }
     
     if (parseFloat(invoice.tip_amount) > 0) {
       doc.text('Tip:', 300, totalsY + 40);
-      doc.text(`${currencySymbol}${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
+      doc.text(`${String(currencySymbol)}${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
     }
     
-    doc.fontSize(12).font('Helvetica-Bold');
+    doc.fontSize(12).font('Helvetica-Bold').fill('#75826b');
     doc.text('Total:', 300, totalsY + 60);
-    doc.text(`${currencySymbol}${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
+    doc.text(`${String(currencySymbol)}${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
     
     // Footer with logo
     doc.moveDown(2);
