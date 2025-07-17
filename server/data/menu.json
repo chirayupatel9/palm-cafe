@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "name": "Espresso",
+    "description": "Single shot of espresso",
+    "price": 3.5
+  },
+  {
+    "id": "2",
+    "name": "Cappuccino",
+    "description": "Espresso with steamed milk and foam",
+    "price": 4.5
+  },
+  {
+    "id": "3",
+    "name": "Latte",
+    "description": "Espresso with steamed milk",
+    "price": 4.75
+  },
+  {
+    "id": "4",
+    "name": "Americano",
+    "description": "Espresso with hot water",
+    "price": 3.75
+  },
+  {
+    "id": "5",
+    "name": "Croissant",
+    "description": "Buttery French pastry",
+    "price": 3.25
+  },
+  {
+    "id": "6",
+    "name": "Chocolate Cake",
+    "description": "Rich chocolate layer cake",
+    "price": 5.5
+  }
+]

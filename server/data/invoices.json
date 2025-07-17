@@ -1,0 +1,25 @@
+[
+  {
+    "invoiceNumber": "1000",
+    "customerName": "abc",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "1",
+        "name": "Espresso",
+        "price": 3.5,
+        "quantity": 1,
+        "total": 3.5
+      },
+      {
+        "id": "2",
+        "name": "Cappuccino",
+        "price": 4.5,
+        "quantity": 1,
+        "total": 4.5
+      }
+    ],
+    "total": 8,
+    "date": "2025-07-17T17:09:37.988Z"
+  }
+]
