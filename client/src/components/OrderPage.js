@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Trash2, Receipt, ShoppingCart } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -7,11 +7,71 @@ const OrderPage = ({ menuItems }) => {
   const [cart, setCart] = useState([]);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [taxInfo, setTaxInfo] = useState({ taxRate: 0, taxName: 'Tax', taxAmount: 0 });
+  const [tipAmount, setTipAmount] = useState(0);
+  const [tipPercentage, setTipPercentage] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const API_BASE_URL = 'http://localhost:5000/api';
 
   // Helper function to ensure price is a number
   const ensureNumber = (value) => {
     const num = parseFloat(value);
     return isNaN(num) ? 0 : num;
+  };
+
+  // Calculate subtotal
+  const getSubtotal = () => {
+    return cart.reduce((total, item) => total + (ensureNumber(item.price) * item.quantity), 0);
+  };
+
+  // Calculate total with tax and tip
+  const getTotal = () => {
+    const subtotal = getSubtotal();
+    return subtotal + taxInfo.taxAmount + tipAmount;
+  };
+
+  // Fetch tax settings and calculate tax
+  const calculateTax = async (subtotal) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/calculate-tax`, { subtotal });
+      setTaxInfo(response.data);
+    } catch (error) {
+      console.error('Error calculating tax:', error);
+      setTaxInfo({ taxRate: 0, taxName: 'Tax', taxAmount: 0 });
+    }
+  };
+
+  // Update tax calculation when cart changes
+  useEffect(() => {
+    const subtotal = getSubtotal();
+    if (subtotal > 0) {
+      calculateTax(subtotal);
+    } else {
+      setTaxInfo({ taxRate: 0, taxName: 'Tax', taxAmount: 0 });
+    }
+  }, [cart]);
+
+  // Handle tip percentage change
+  const handleTipPercentageChange = (percentage) => {
+    setTipPercentage(percentage);
+    const subtotal = getSubtotal();
+    const newTipAmount = (subtotal * percentage) / 100;
+    setTipAmount(newTipAmount);
+  };
+
+  // Handle custom tip amount
+  const handleTipAmountChange = (amount) => {
+    const newAmount = ensureNumber(amount);
+    setTipAmount(newAmount);
+    
+    const subtotal = getSubtotal();
+    if (subtotal > 0) {
+      const newPercentage = (newAmount / subtotal) * 100;
+      setTipPercentage(newPercentage);
+    } else {
+      setTipPercentage(0);
+    }
   };
 
   const addToCart = (item) => {
@@ -47,10 +107,6 @@ const OrderPage = ({ menuItems }) => {
     );
   };
 
-  const getTotal = () => {
-    return cart.reduce((total, item) => total + (ensureNumber(item.price) * item.quantity), 0);
-  };
-
   const generateInvoice = async () => {
     if (cart.length === 0) {
       toast.error('Please add items to cart first');
@@ -61,6 +117,8 @@ const OrderPage = ({ menuItems }) => {
       toast.error('Please enter customer name');
       return;
     }
+
+    setLoading(true);
 
     try {
       const orderData = {
@@ -73,11 +131,11 @@ const OrderPage = ({ menuItems }) => {
           quantity: item.quantity,
           total: ensureNumber(item.price) * item.quantity
         })),
-        total: getTotal(),
+        tipAmount: tipAmount,
         date: new Date().toISOString()
       };
 
-      const response = await axios.post('/api/invoices', orderData);
+      const response = await axios.post(`${API_BASE_URL}/invoices`, orderData);
       
       // Create blob and open PDF in new tab
       const pdfBlob = new Blob([Uint8Array.from(atob(response.data.pdf), c => c.charCodeAt(0))], {
@@ -96,11 +154,15 @@ const OrderPage = ({ menuItems }) => {
       setCart([]);
       setCustomerName('');
       setCustomerPhone('');
+      setTipAmount(0);
+      setTipPercentage(0);
       
       toast.success('Invoice generated and opened!');
     } catch (error) {
       console.error('Error generating invoice:', error);
       toast.error('Failed to generate invoice');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,8 +170,13 @@ const OrderPage = ({ menuItems }) => {
     setCart([]);
     setCustomerName('');
     setCustomerPhone('');
+    setTipAmount(0);
+    setTipPercentage(0);
     toast.success('Cart cleared');
   };
+
+  const subtotal = getSubtotal();
+  const total = getTotal();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -224,12 +291,69 @@ const OrderPage = ({ menuItems }) => {
             </div>
           )}
 
-          {/* Total */}
+          {/* Tip Selection */}
           {cart.length > 0 && (
             <div className="border-t pt-4 mb-4">
-              <div className="flex justify-between items-center text-lg font-semibold">
+              <h3 className="font-medium text-gray-900 mb-3">Tip</h3>
+              
+              {/* Quick tip buttons */}
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                {[0, 10, 15, 18, 20, 25].map((percentage) => (
+                  <button
+                    key={percentage}
+                    onClick={() => handleTipPercentageChange(percentage)}
+                    className={`py-2 px-3 text-sm rounded-lg border transition-colors ${
+                      tipPercentage === percentage
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {percentage === 0 ? 'No Tip' : `${percentage}%`}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Custom tip amount */}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Custom:</span>
+                <input
+                  type="number"
+                  value={tipAmount.toFixed(2)}
+                  onChange={(e) => handleTipAmountChange(e.target.value)}
+                  step="0.01"
+                  min="0"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Totals */}
+          {cart.length > 0 && (
+            <div className="border-t pt-4 mb-4 space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Subtotal:</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              
+              {taxInfo.taxAmount > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
+                  <span>${taxInfo.taxAmount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              {tipAmount > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Tip:</span>
+                  <span>${tipAmount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
                 <span>Total:</span>
-                <span className="text-primary-600">${getTotal().toFixed(2)}</span>
+                <span className="text-primary-600">${total.toFixed(2)}</span>
               </div>
             </div>
           )}
@@ -237,11 +361,11 @@ const OrderPage = ({ menuItems }) => {
           {/* Generate Invoice Button */}
           <button
             onClick={generateInvoice}
-            disabled={cart.length === 0}
+            disabled={cart.length === 0 || loading}
             className="btn-primary w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Receipt className="h-4 w-4 mr-2" />
-            Generate & Open Invoice
+            {loading ? 'Generating...' : 'Generate & Open Invoice'}
           </button>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Coffee, Receipt, Settings, Plus } from 'lucide-react';
+import { Coffee, Receipt, Settings, Plus, Calculator } from 'lucide-react';
 import axios from 'axios';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
 import InvoiceHistory from './components/InvoiceHistory';
+import TaxSettings from './components/TaxSettings';
 
 // Configure axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -71,6 +72,8 @@ function App() {
         );
       case 'history':
         return <InvoiceHistory />;
+      case 'tax':
+        return <TaxSettings />;
       default:
         return <OrderPage menuItems={menuItems} />;
     }
@@ -136,6 +139,17 @@ function App() {
             >
               <Receipt className="h-4 w-4 mr-2" />
               Invoice History
+            </button>
+            <button
+              onClick={() => setCurrentPage('tax')}
+              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
+                currentPage === 'tax'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Calculator className="h-4 w-4 mr-2" />
+              Tax Settings
             </button>
           </div>
         </div>

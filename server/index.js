@@ -5,6 +5,7 @@ const PDFDocument = require('pdfkit');
 const { initializeDatabase, testConnection } = require('./config/database');
 const MenuItem = require('./models/menuItem');
 const Invoice = require('./models/invoice');
+const TaxSettings = require('./models/taxSettings');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -74,9 +75,27 @@ const generatePDF = (invoice) => {
       yPosition += 20;
     });
 
-    // Total
+    // Totals section
     doc.moveDown();
-    doc.fontSize(12).font('Helvetica-Bold').text(`Total: $${parseFloat(invoice.total).toFixed(2)}`, { align: 'right' });
+    const totalsY = doc.y;
+    
+    doc.fontSize(10).font('Helvetica');
+    doc.text('Subtotal:', 300, totalsY);
+    doc.text(`$${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
+    
+    if (parseFloat(invoice.tax_amount) > 0) {
+      doc.text('Tax:', 300, totalsY + 20);
+      doc.text(`$${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
+    }
+    
+    if (parseFloat(invoice.tip_amount) > 0) {
+      doc.text('Tip:', 300, totalsY + 40);
+      doc.text(`$${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
+    }
+    
+    doc.fontSize(12).font('Helvetica-Bold');
+    doc.text('Total:', 300, totalsY + 60);
+    doc.text(`$${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
     
     // Footer
     doc.moveDown(2);
@@ -164,6 +183,66 @@ app.delete('/api/menu/:id', async (req, res) => {
   }
 });
 
+// Get current tax settings
+app.get('/api/tax-settings', async (req, res) => {
+  try {
+    const taxSettings = await TaxSettings.getCurrent();
+    res.json(taxSettings);
+  } catch (error) {
+    console.error('Error fetching tax settings:', error);
+    res.status(500).json({ error: 'Failed to fetch tax settings' });
+  }
+});
+
+// Update tax settings
+app.put('/api/tax-settings', async (req, res) => {
+  try {
+    const { tax_rate, tax_name } = req.body;
+    
+    if (tax_rate === undefined || !tax_name) {
+      return res.status(400).json({ error: 'Tax rate and tax name are required' });
+    }
+
+    const updatedSettings = await TaxSettings.update({
+      tax_rate: parseFloat(tax_rate),
+      tax_name: tax_name.trim()
+    });
+
+    res.json(updatedSettings);
+  } catch (error) {
+    console.error('Error updating tax settings:', error);
+    res.status(500).json({ error: 'Failed to update tax settings' });
+  }
+});
+
+// Get tax history
+app.get('/api/tax-settings/history', async (req, res) => {
+  try {
+    const history = await TaxSettings.getHistory();
+    res.json(history);
+  } catch (error) {
+    console.error('Error fetching tax history:', error);
+    res.status(500).json({ error: 'Failed to fetch tax history' });
+  }
+});
+
+// Calculate tax for a given subtotal
+app.post('/api/calculate-tax', async (req, res) => {
+  try {
+    const { subtotal } = req.body;
+    
+    if (subtotal === undefined) {
+      return res.status(400).json({ error: 'Subtotal is required' });
+    }
+
+    const taxCalculation = await TaxSettings.calculateTax(parseFloat(subtotal));
+    res.json(taxCalculation);
+  } catch (error) {
+    console.error('Error calculating tax:', error);
+    res.status(500).json({ error: 'Failed to calculate tax' });
+  }
+});
+
 // Get all invoices
 app.get('/api/invoices', async (req, res) => {
   try {
@@ -178,7 +257,7 @@ app.get('/api/invoices', async (req, res) => {
 // Create new invoice
 app.post('/api/invoices', async (req, res) => {
   try {
-    const { customerName, customerPhone, items, total, date } = req.body;
+    const { customerName, customerPhone, items, tipAmount, date } = req.body;
     
     if (!customerName || !items || items.length === 0) {
       return res.status(400).json({ error: 'Customer name and items are required' });
@@ -186,11 +265,24 @@ app.post('/api/invoices', async (req, res) => {
 
     const invoiceNumber = await Invoice.getNextInvoiceNumber();
 
+    // Calculate subtotal
+    const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+    
+    // Calculate tax
+    const taxCalculation = await TaxSettings.calculateTax(subtotal);
+    
+    // Calculate total
+    const tipAmountNum = parseFloat(tipAmount) || 0;
+    const total = subtotal + taxCalculation.taxAmount + tipAmountNum;
+
     const invoiceData = {
       invoiceNumber,
       customerName,
       customerPhone,
       items,
+      subtotal,
+      taxAmount: taxCalculation.taxAmount,
+      tipAmount: tipAmountNum,
       total,
       date
     };
@@ -201,7 +293,12 @@ app.post('/api/invoices', async (req, res) => {
       const pdfBase64 = await generatePDF(createdInvoice);
       res.json({
         invoiceNumber,
-        pdf: pdfBase64
+        pdf: pdfBase64,
+        taxInfo: {
+          taxRate: taxCalculation.taxRate,
+          taxName: taxCalculation.taxName,
+          taxAmount: taxCalculation.taxAmount
+        }
       });
     } catch (error) {
       console.error('Error generating PDF:', error);

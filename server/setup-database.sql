@@ -15,11 +15,24 @@ CREATE TABLE IF NOT EXISTS menu_items (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create tax_settings table
+CREATE TABLE IF NOT EXISTS tax_settings (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  tax_rate DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  tax_name VARCHAR(100) DEFAULT 'Tax',
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Create invoices table
 CREATE TABLE IF NOT EXISTS invoices (
   invoice_number VARCHAR(20) PRIMARY KEY,
   customer_name VARCHAR(255) NOT NULL,
   customer_phone VARCHAR(50),
+  subtotal DECIMAL(10,2) NOT NULL,
+  tax_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  tip_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   total DECIMAL(10,2) NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -47,6 +60,10 @@ INSERT INTO menu_items (id, name, description, price) VALUES
 ('6', 'Chocolate Cake', 'Rich chocolate layer cake', 5.50)
 ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), price = VALUES(price);
 
+-- Insert default tax setting
+INSERT INTO tax_settings (tax_rate, tax_name) VALUES (8.5, 'Sales Tax')
+ON DUPLICATE KEY UPDATE tax_rate = VALUES(tax_rate), tax_name = VALUES(tax_name);
+
 -- Create indexes for better performance
 CREATE INDEX idx_menu_items_name ON menu_items(name);
 CREATE INDEX idx_invoices_date ON invoices(date);
@@ -56,4 +73,5 @@ CREATE INDEX idx_invoice_items_invoice_number ON invoice_items(invoice_number);
 SHOW TABLES;
 
 -- Show sample data
-SELECT * FROM menu_items; 
+SELECT * FROM menu_items;
+SELECT * FROM tax_settings; 

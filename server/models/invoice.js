@@ -9,6 +9,9 @@ class Invoice {
           i.invoice_number,
           i.customer_name,
           i.customer_phone,
+          i.subtotal,
+          i.tax_amount,
+          i.tip_amount,
           i.total,
           i.date,
           i.created_at
@@ -32,6 +35,9 @@ class Invoice {
 
           return {
             ...invoice,
+            subtotal: parseFloat(invoice.subtotal),
+            tax_amount: parseFloat(invoice.tax_amount),
+            tip_amount: parseFloat(invoice.tip_amount),
             total: parseFloat(invoice.total),
             items: items.map(item => ({
               ...item,
@@ -56,6 +62,9 @@ class Invoice {
           i.invoice_number,
           i.customer_name,
           i.customer_phone,
+          i.subtotal,
+          i.tax_amount,
+          i.tip_amount,
           i.total,
           i.date,
           i.created_at
@@ -83,6 +92,9 @@ class Invoice {
 
       return {
         ...invoice,
+        subtotal: parseFloat(invoice.subtotal),
+        tax_amount: parseFloat(invoice.tax_amount),
+        tip_amount: parseFloat(invoice.tip_amount),
         total: parseFloat(invoice.total),
         items: items.map(item => ({
           ...item,
@@ -101,16 +113,16 @@ class Invoice {
     try {
       await connection.beginTransaction();
 
-      const { invoiceNumber, customerName, customerPhone, items, total, date } = invoiceData;
+      const { invoiceNumber, customerName, customerPhone, items, subtotal, taxAmount, tipAmount, total, date } = invoiceData;
 
       // Convert ISO datetime to MySQL datetime format
       const mysqlDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
 
       // Insert invoice
       await connection.execute(`
-        INSERT INTO invoices (invoice_number, customer_name, customer_phone, total, date)
-        VALUES (?, ?, ?, ?, ?)
-      `, [invoiceNumber, customerName, customerPhone, total, mysqlDate]);
+        INSERT INTO invoices (invoice_number, customer_name, customer_phone, subtotal, tax_amount, tip_amount, total, date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [invoiceNumber, customerName, customerPhone, subtotal, taxAmount, tipAmount, total, mysqlDate]);
 
       // Insert invoice items
       for (const item of items) {
@@ -127,6 +139,9 @@ class Invoice {
         customerName,
         customerPhone,
         items,
+        subtotal: parseFloat(subtotal),
+        tax_amount: parseFloat(taxAmount),
+        tip_amount: parseFloat(tipAmount),
         total: parseFloat(total),
         date
       };
@@ -171,10 +186,22 @@ class Invoice {
         FROM invoices
       `);
 
+      const [totalTips] = await pool.execute(`
+        SELECT SUM(tip_amount) as totalTips
+        FROM invoices
+      `);
+
+      const [totalTax] = await pool.execute(`
+        SELECT SUM(tax_amount) as totalTax
+        FROM invoices
+      `);
+
       return {
         totalRevenue: parseFloat(totalRevenue[0].totalRevenue) || 0,
         totalOrders: totalOrders[0].totalOrders || 0,
-        uniqueCustomers: uniqueCustomers[0].uniqueCustomers || 0
+        uniqueCustomers: uniqueCustomers[0].uniqueCustomers || 0,
+        totalTips: parseFloat(totalTips[0].totalTips) || 0,
+        totalTax: parseFloat(totalTax[0].totalTax) || 0
       };
     } catch (error) {
       throw new Error(`Error fetching statistics: ${error.message}`);

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Calendar, User, DollarSign } from 'lucide-react';
+import { Download, Calendar, User, DollarSign, Percent, Heart } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const InvoiceHistory = () => {
   const [invoices, setInvoices] = useState([]);
+  const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchInvoices();
+    fetchStatistics();
   }, []);
 
   const fetchInvoices = async () => {
@@ -20,6 +22,15 @@ const InvoiceHistory = () => {
       toast.error('Failed to load invoice history');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStatistics = async () => {
+    try {
+      const response = await axios.get('/api/statistics');
+      setStatistics(response.data);
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
     }
   };
 
@@ -154,6 +165,15 @@ const InvoiceHistory = () => {
                           {invoice.total.toFixed(2)}
                         </div>
                       </div>
+                      {/* Show tax and tip breakdown */}
+                      <div className="text-xs text-gray-500 mt-1">
+                        {invoice.tax_amount > 0 && (
+                          <div>Tax: ${invoice.tax_amount.toFixed(2)}</div>
+                        )}
+                        {invoice.tip_amount > 0 && (
+                          <div>Tip: ${invoice.tip_amount.toFixed(2)}</div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
@@ -173,8 +193,8 @@ const InvoiceHistory = () => {
       </div>
 
       {/* Summary Stats */}
-      {invoices.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {invoices.length > 0 && statistics && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <div className="card">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -183,7 +203,7 @@ const InvoiceHistory = () => {
               <div className="ml-4">
                 <div className="text-sm font-medium text-gray-500">Total Revenue</div>
                 <div className="text-2xl font-semibold text-gray-900">
-                  ${invoices.reduce((sum, invoice) => sum + invoice.total, 0).toFixed(2)}
+                  ${statistics.totalRevenue.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -197,7 +217,7 @@ const InvoiceHistory = () => {
               <div className="ml-4">
                 <div className="text-sm font-medium text-gray-500">Total Orders</div>
                 <div className="text-2xl font-semibold text-gray-900">
-                  {invoices.length}
+                  {statistics.totalOrders}
                 </div>
               </div>
             </div>
@@ -211,7 +231,35 @@ const InvoiceHistory = () => {
               <div className="ml-4">
                 <div className="text-sm font-medium text-gray-500">Unique Customers</div>
                 <div className="text-2xl font-semibold text-gray-900">
-                  {new Set(invoices.map(invoice => invoice.customerName)).size}
+                  {statistics.uniqueCustomers}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Percent className="h-8 w-8 text-green-500" />
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-500">Total Tax Collected</div>
+                <div className="text-2xl font-semibold text-gray-900">
+                  ${statistics.totalTax.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Heart className="h-8 w-8 text-red-500" />
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-500">Total Tips</div>
+                <div className="text-2xl font-semibold text-gray-900">
+                  ${statistics.totalTips.toFixed(2)}
                 </div>
               </div>
             </div>
