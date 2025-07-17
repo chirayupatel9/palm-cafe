@@ -104,8 +104,14 @@ const CategoryManagement = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12">
+        <img 
+          src="/images/palm-cafe-logo.png" 
+          alt="Palm Cafe Logo" 
+          className="h-12 w-12 mb-3"
+        />
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary-500"></div>
+        <p className="mt-3 text-sm text-secondary-600">Loading categories...</p>
       </div>
     );
   }
@@ -180,7 +186,11 @@ const CategoryManagement = () => {
         <h3 className="text-lg font-semibold text-secondary-700 mb-4">Current Categories</h3>
         {categories.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <FolderOpen className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-16 w-16 mx-auto mb-4 opacity-50"
+            />
             <p>No categories found</p>
             <p className="text-sm">Add your first category to get started</p>
           </div>

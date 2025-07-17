@@ -70,8 +70,14 @@ const InvoiceHistory = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12">
+        <img 
+          src="/images/palm-cafe-logo.png" 
+          alt="Palm Cafe Logo" 
+          className="h-12 w-12 mb-3"
+        />
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary-500"></div>
+        <p className="mt-3 text-sm text-secondary-600">Loading invoice history...</p>
       </div>
     );
   }
@@ -80,9 +86,18 @@ const InvoiceHistory = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Invoice History</h2>
-        <div className="text-sm text-gray-500">
-          Total Invoices: {invoices.length}
+        <div className="flex items-center">
+          <img 
+            src="/images/palm-cafe-logo.png" 
+            alt="Palm Cafe Logo" 
+            className="h-10 w-10 mr-3"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Invoice History</h2>
+            <div className="text-sm text-gray-500">
+              Total Invoices: {invoices.length}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -90,7 +105,11 @@ const InvoiceHistory = () => {
       <div className="card">
         {invoices.length === 0 ? (
           <div className="text-center py-8 sm:py-12 text-gray-500">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-16 w-16 mx-auto mb-4 opacity-50"
+            />
             <h3 className="text-lg font-medium text-secondary-700 mb-2">No invoices yet</h3>
             <p className="text-sm">Generate your first invoice to see it here</p>
           </div>

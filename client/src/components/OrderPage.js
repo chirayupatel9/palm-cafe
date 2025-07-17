@@ -210,7 +210,11 @@ const OrderPage = ({ menuItems }) => {
           
           {Object.keys(groupedMenuItems).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+              <img 
+                src="/images/palm-cafe-logo.png" 
+                alt="Palm Cafe Logo" 
+                className="h-16 w-16 mx-auto mb-4 opacity-50"
+              />
               <p>No menu items available</p>
               <p className="text-sm">Add items in Menu Management</p>
             </div>

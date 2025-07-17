@@ -98,8 +98,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-accent-50">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-accent-50">
+        <img 
+          src="/images/palm-cafe-logo.png" 
+          alt="Palm Cafe Logo" 
+          className="h-16 w-16 mb-4"
+        />
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary-500"></div>
+        <p className="mt-4 text-secondary-600">Loading Palm Cafe...</p>
       </div>
     );
   }

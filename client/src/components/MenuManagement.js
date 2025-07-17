@@ -329,7 +329,11 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {Object.keys(groupedMenuItems).length === 0 ? (
         <div className="card">
           <div className="text-center py-8 text-gray-500">
-            <FolderOpen className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-16 w-16 mx-auto mb-4 opacity-50"
+            />
             <p>No menu items found</p>
             <p className="text-sm">Add your first menu item to get started</p>
           </div>

@@ -98,8 +98,14 @@ const TaxSettings = () => {
 
   if (loading && !currentSettings) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12">
+        <img 
+          src="/images/palm-cafe-logo.png" 
+          alt="Palm Cafe Logo" 
+          className="h-12 w-12 mb-3"
+        />
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary-500"></div>
+        <p className="mt-3 text-sm text-secondary-600">Loading tax settings...</p>
       </div>
     );
   }
@@ -108,12 +114,19 @@ const TaxSettings = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 flex items-center">
-            <Calculator className="h-6 w-6 mr-2" />
-            Tax Settings
-          </h2>
-          <p className="text-sm text-gray-600">Manage tax rates and settings for your cafe</p>
+        <div className="flex items-center">
+          <img 
+            src="/images/palm-cafe-logo.png" 
+            alt="Palm Cafe Logo" 
+            className="h-10 w-10 mr-3"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 flex items-center">
+              <Calculator className="h-6 w-6 mr-2" />
+              Tax Settings
+            </h2>
+            <p className="text-sm text-gray-600">Manage tax rates and settings for your cafe</p>
+          </div>
         </div>
       </div>
 
@@ -219,7 +232,11 @@ const TaxSettings = () => {
         
         {history.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-12 w-12 mx-auto mb-3 opacity-50"
+            />
             <p>No tax history available</p>
           </div>
         ) : (

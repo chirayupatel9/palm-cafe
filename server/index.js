@@ -47,47 +47,49 @@ const generatePDF = (invoice) => {
       resolve(result.toString('base64'));
     });
 
-    // Draw logo circle background
+    // Add the actual Palm Cafe logo
     const logoX = 50;
     const logoY = 50;
     const logoSize = 40;
     
-    // Logo background circle
-    doc.save();
-    doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
-    doc.fill('#153059');
-    doc.restore();
-    
-    // Logo border
-    doc.save();
-    doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
-    doc.strokeColor('#f4e1ba');
-    doc.lineWidth(1);
-    doc.stroke();
-    doc.restore();
-    
-    // Palm tree trunk (simplified)
-    doc.save();
-    doc.rect(logoX + 15, logoY + 25, 10, 15);
-    doc.fill('#f4e1ba');
-    doc.restore();
-    
-    // Palm tree fronds (simplified triangles)
-    doc.save();
-    doc.moveTo(logoX + 20, logoY + 25);
-    doc.lineTo(logoX + 10, logoY + 15);
-    doc.lineTo(logoX + 30, logoY + 15);
-    doc.closePath();
-    doc.fill('#f4e1ba');
-    doc.restore();
-    
-    // Logo text
-    doc.save();
-    doc.fontSize(8).font('Helvetica-Bold').fill('#f4e1ba');
-    doc.text('THE PALM', logoX + logoSize/2, logoY + logoSize + 5, { align: 'center' });
-    doc.fontSize(6).font('Helvetica');
-    doc.text('CAFE', logoX + logoSize/2, logoY + logoSize + 15, { align: 'center' });
-    doc.restore();
+    try {
+      // Add the PNG logo to the PDF
+      doc.image('./public/images/palm-cafe-logo.png', logoX, logoY, { width: logoSize, height: logoSize });
+    } catch (error) {
+      console.error('Error adding logo to PDF:', error);
+      // Fallback to drawn logo if image fails to load
+      doc.save();
+      doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
+      doc.fill('#153059');
+      doc.restore();
+      
+      doc.save();
+      doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
+      doc.strokeColor('#f4e1ba');
+      doc.lineWidth(1);
+      doc.stroke();
+      doc.restore();
+      
+      doc.save();
+      doc.rect(logoX + 15, logoY + 25, 10, 15);
+      doc.fill('#f4e1ba');
+      doc.restore();
+      
+      doc.save();
+      doc.moveTo(logoX + 20, logoY + 25);
+      doc.lineTo(logoX + 10, logoY + 15);
+      doc.lineTo(logoX + 30, logoY + 15);
+      doc.closePath();
+      doc.fill('#f4e1ba');
+      doc.restore();
+      
+      doc.save();
+      doc.fontSize(8).font('Helvetica-Bold').fill('#f4e1ba');
+      doc.text('THE PALM', logoX + logoSize/2, logoY + logoSize + 5, { align: 'center' });
+      doc.fontSize(6).font('Helvetica');
+      doc.text('CAFE', logoX + logoSize/2, logoY + logoSize + 15, { align: 'center' });
+      doc.restore();
+    }
 
     // Header with logo
     doc.fontSize(24).font('Helvetica-Bold').text('PALM CAFE', { align: 'center' });
@@ -168,33 +170,37 @@ const generatePDF = (invoice) => {
     const footerLogoY = doc.y;
     const footerLogoSize = 20;
     
-    // Footer logo background circle
-    doc.save();
-    doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
-    doc.fill('#153059');
-    doc.restore();
-    
-    // Footer logo border
-    doc.save();
-    doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
-    doc.strokeColor('#f4e1ba');
-    doc.lineWidth(0.5);
-    doc.stroke();
-    doc.restore();
-    
-    // Footer logo palm tree (simplified)
-    doc.save();
-    doc.rect(footerLogoX + 7, footerLogoY + 12, 6, 8);
-    doc.fill('#f4e1ba');
-    doc.restore();
-    
-    doc.save();
-    doc.moveTo(footerLogoX + 10, footerLogoY + 12);
-    doc.lineTo(footerLogoX + 5, footerLogoY + 7);
-    doc.lineTo(footerLogoX + 15, footerLogoY + 7);
-    doc.closePath();
-    doc.fill('#f4e1ba');
-    doc.restore();
+    try {
+      // Add the PNG logo to the footer
+      doc.image('./public/images/palm-cafe-logo.png', footerLogoX, footerLogoY, { width: footerLogoSize, height: footerLogoSize });
+    } catch (error) {
+      console.error('Error adding footer logo to PDF:', error);
+      // Fallback to drawn logo if image fails to load
+      doc.save();
+      doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
+      doc.fill('#153059');
+      doc.restore();
+      
+      doc.save();
+      doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
+      doc.strokeColor('#f4e1ba');
+      doc.lineWidth(0.5);
+      doc.stroke();
+      doc.restore();
+      
+      doc.save();
+      doc.rect(footerLogoX + 7, footerLogoY + 12, 6, 8);
+      doc.fill('#f4e1ba');
+      doc.restore();
+      
+      doc.save();
+      doc.moveTo(footerLogoX + 10, footerLogoY + 12);
+      doc.lineTo(footerLogoX + 5, footerLogoY + 7);
+      doc.lineTo(footerLogoX + 15, footerLogoY + 7);
+      doc.closePath();
+      doc.fill('#f4e1ba');
+      doc.restore();
+    }
     
     // Footer text
     doc.save();
