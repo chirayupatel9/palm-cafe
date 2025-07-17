@@ -197,7 +197,7 @@ const OrderPage = ({ menuItems }) => {
       {/* Menu Items */}
       <div className="lg:col-span-2">
         <div className="card">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Menu Items</h2>
+          <h2 className="text-xl font-semibold text-secondary-700 mb-4">Menu Items</h2>
           
           {Object.keys(groupedMenuItems).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -208,21 +208,21 @@ const OrderPage = ({ menuItems }) => {
           ) : (
             <div className="space-y-6">
               {Object.entries(groupedMenuItems).map(([categoryName, items]) => (
-                <div key={categoryName} className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <FolderOpen className="h-5 w-5 mr-2 text-primary-500" />
+                <div key={categoryName} className="border border-accent-200 rounded-lg p-4 bg-accent-50">
+                  <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
+                    <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
                     {categoryName}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        className="border border-accent-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
                         onClick={() => addToCart(item)}
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium text-gray-900">{item.name}</h4>
-                          <span className="text-lg font-semibold text-primary-600">
+                          <h4 className="font-medium text-secondary-700">{item.name}</h4>
+                          <span className="text-lg font-semibold text-secondary-600">
                             ${ensureNumber(item.price).toFixed(2)}
                           </span>
                         </div>
@@ -251,7 +251,7 @@ const OrderPage = ({ menuItems }) => {
       <div className="lg:col-span-1">
         <div className="card sticky top-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+            <h2 className="text-xl font-semibold text-secondary-700 flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
               Cart
             </h2>
@@ -293,9 +293,9 @@ const OrderPage = ({ menuItems }) => {
           ) : (
             <div className="space-y-3 mb-4">
               {cart.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={item.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{item.name}</h4>
+                    <h4 className="font-medium text-secondary-700">{item.name}</h4>
                     <p className="text-sm text-gray-600">${ensureNumber(item.price).toFixed(2)} each</p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -326,8 +326,8 @@ const OrderPage = ({ menuItems }) => {
 
           {/* Tip Selection */}
           {cart.length > 0 && (
-            <div className="border-t pt-4 mb-4">
-              <h3 className="font-medium text-gray-900 mb-3">Tip</h3>
+            <div className="border-t border-accent-200 pt-4 mb-4">
+              <h3 className="font-medium text-secondary-700 mb-3">Tip</h3>
               
               {/* Quick tip buttons */}
               <div className="grid grid-cols-3 gap-2 mb-3">
@@ -337,8 +337,8 @@ const OrderPage = ({ menuItems }) => {
                     onClick={() => handleTipPercentageChange(percentage)}
                     className={`py-2 px-3 text-sm rounded-lg border transition-colors ${
                       tipPercentage === percentage
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? 'bg-secondary-500 text-white border-secondary-500'
+                        : 'bg-white text-secondary-700 border-accent-300 hover:bg-accent-50'
                     }`}
                   >
                     {percentage === 0 ? 'No Tip' : `${percentage}%`}
@@ -355,7 +355,7 @@ const OrderPage = ({ menuItems }) => {
                   onChange={(e) => handleTipAmountChange(e.target.value)}
                   step="0.01"
                   min="0"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-accent-300 rounded-lg text-sm focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -364,7 +364,7 @@ const OrderPage = ({ menuItems }) => {
 
           {/* Totals */}
           {cart.length > 0 && (
-            <div className="border-t pt-4 mb-4 space-y-2">
+            <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal:</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -384,9 +384,9 @@ const OrderPage = ({ menuItems }) => {
                 </div>
               )}
               
-              <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
+              <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
                 <span>Total:</span>
-                <span className="text-primary-600">${total.toFixed(2)}</span>
+                <span className="text-secondary-600">${total.toFixed(2)}</span>
               </div>
             </div>
           )}

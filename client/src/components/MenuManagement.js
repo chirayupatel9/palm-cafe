@@ -209,7 +209,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Menu Management</h2>
+        <h2 className="text-2xl font-bold text-secondary-700">Menu Management</h2>
         <div className="flex space-x-3">
           <label className="btn-secondary flex items-center cursor-pointer">
             <Upload className="h-4 w-4 mr-2" />
@@ -243,7 +243,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {/* Category Filter */}
       <div className="card">
         <div className="flex items-center space-x-4">
-          <label className="text-sm font-medium text-gray-700">Filter by Category:</label>
+          <label className="text-sm font-medium text-secondary-700">Filter by Category:</label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -262,7 +262,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {/* Add New Item Form */}
       {showAddForm && (
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Menu Item</h3>
+          <h3 className="text-lg font-semibold text-secondary-700 mb-4">Add New Menu Item</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <select
               value={formData.category_id}
@@ -334,34 +334,34 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       ) : (
         Object.entries(groupedMenuItems).map(([categoryName, items]) => (
           <div key={categoryName} className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FolderOpen className="h-5 w-5 mr-2" />
+            <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
+              <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
               {categoryName} ({items.length} items)
             </h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-accent-200">
+                <thead className="bg-accent-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
                       Item
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
                       Description
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
                       Price
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
                       Sort Order
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-secondary-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-accent-200">
                   {items.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
+                    <tr key={item.id} className="hover:bg-accent-50">
                       {editingId === item.id ? (
                         // Edit Mode
                         <>
@@ -428,13 +428,13 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                         // View Mode
                         <>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                            <div className="text-sm font-medium text-secondary-700">{item.name}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{item.description}</div>
+                            <div className="text-sm text-gray-600">{item.description}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-semibold text-primary-600">
+                            <div className="text-sm font-semibold text-secondary-600">
                               ${ensureNumber(item.price).toFixed(2)}
                             </div>
                           </td>

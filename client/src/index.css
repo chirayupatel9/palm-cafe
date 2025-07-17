@@ -9,7 +9,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+  background-color: #f8f9f7;
 }
 
 code {
@@ -19,18 +19,42 @@ code {
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-sm;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-accent-400 hover:bg-accent-500 text-secondary-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-sm;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply bg-white rounded-lg shadow-md p-6 border border-gray-100;
   }
   
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-colors duration-200;
+  }
+  
+  .nav-active {
+    @apply border-secondary-500 text-secondary-600;
+  }
+  
+  .nav-inactive {
+    @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+  }
+  
+  .text-primary {
+    @apply text-secondary-600;
+  }
+  
+  .bg-primary {
+    @apply bg-secondary-500;
+  }
+  
+  .border-primary {
+    @apply border-secondary-500;
+  }
+  
+  .ring-primary {
+    @apply ring-secondary-500;
   }
 } 

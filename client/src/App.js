@@ -84,38 +84,38 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-accent-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-accent-50">
       <Toaster position="top-right" />
       
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b border-accent-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Coffee className="h-8 w-8 text-primary-500 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Palm Cafe</h1>
+              <Coffee className="h-8 w-8 text-secondary-500 mr-3" />
+              <h1 className="text-2xl font-bold text-secondary-700">Palm Cafe</h1>
             </div>
           </div>
         </div>
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white shadow-sm border-b border-accent-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <button
               onClick={() => setCurrentPage('order')}
               className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
                 currentPage === 'order'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'nav-active'
+                  : 'nav-inactive'
               }`}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -125,8 +125,8 @@ function App() {
               onClick={() => setCurrentPage('categories')}
               className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
                 currentPage === 'categories'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'nav-active'
+                  : 'nav-inactive'
               }`}
             >
               <FolderOpen className="h-4 w-4 mr-2" />
@@ -136,8 +136,8 @@ function App() {
               onClick={() => setCurrentPage('menu')}
               className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
                 currentPage === 'menu'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'nav-active'
+                  : 'nav-inactive'
               }`}
             >
               <Settings className="h-4 w-4 mr-2" />
@@ -147,8 +147,8 @@ function App() {
               onClick={() => setCurrentPage('history')}
               className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
                 currentPage === 'history'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'nav-active'
+                  : 'nav-inactive'
               }`}
             >
               <Receipt className="h-4 w-4 mr-2" />
@@ -158,8 +158,8 @@ function App() {
               onClick={() => setCurrentPage('tax')}
               className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
                 currentPage === 'tax'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'nav-active'
+                  : 'nav-inactive'
               }`}
             >
               <Calculator className="h-4 w-4 mr-2" />
