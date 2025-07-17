@@ -9,6 +9,7 @@ const MenuItem = require('./models/menuItem');
 const Category = require('./models/category');
 const Invoice = require('./models/invoice');
 const TaxSettings = require('./models/taxSettings');
+const CurrencySettings = require('./models/currencySettings');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,7 +37,17 @@ app.use(cors());
 app.use(express.json());
 
 // Generate PDF invoice
-const generatePDF = (invoice) => {
+const generatePDF = async (invoice) => {
+  // Get current currency settings
+  let currencySymbol = '$'; // Default fallback
+  try {
+    const currencySettings = await CurrencySettings.getCurrent();
+    currencySymbol = currencySettings.currency_symbol || '$';
+  } catch (error) {
+    console.error('Error fetching currency settings for PDF:', error);
+    // Use default $ if currency settings fail
+  }
+
   return new Promise((resolve) => {
     const doc = new PDFDocument({ margin: 50 });
     const chunks = [];
@@ -135,8 +146,8 @@ const generatePDF = (invoice) => {
       
       doc.text(item.item_name, 50, yPosition);
       doc.text(item.quantity.toString(), 250, yPosition);
-      doc.text(`$${parseFloat(item.price).toFixed(2)}`, 300, yPosition);
-      doc.text(`$${parseFloat(item.total).toFixed(2)}`, 380, yPosition);
+      doc.text(`${currencySymbol}${parseFloat(item.price).toFixed(2)}`, 300, yPosition);
+      doc.text(`${currencySymbol}${parseFloat(item.total).toFixed(2)}`, 380, yPosition);
       yPosition += 20;
     });
 
@@ -146,21 +157,21 @@ const generatePDF = (invoice) => {
     
     doc.fontSize(10).font('Helvetica');
     doc.text('Subtotal:', 300, totalsY);
-    doc.text(`$${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
+    doc.text(`${currencySymbol}${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
     
     if (parseFloat(invoice.tax_amount) > 0) {
       doc.text('Tax:', 300, totalsY + 20);
-      doc.text(`$${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
+      doc.text(`${currencySymbol}${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
     }
     
     if (parseFloat(invoice.tip_amount) > 0) {
       doc.text('Tip:', 300, totalsY + 40);
-      doc.text(`$${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
+      doc.text(`${currencySymbol}${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
     }
     
     doc.fontSize(12).font('Helvetica-Bold');
     doc.text('Total:', 300, totalsY + 60);
-    doc.text(`$${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
+    doc.text(`${currencySymbol}${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
     
     // Footer with logo
     doc.moveDown(2);
@@ -597,6 +608,61 @@ app.post('/api/calculate-tax', async (req, res) => {
   } catch (error) {
     console.error('Error calculating tax:', error);
     res.status(500).json({ error: 'Failed to calculate tax' });
+  }
+});
+
+// Get current currency settings
+app.get('/api/currency-settings', async (req, res) => {
+  try {
+    const currencySettings = await CurrencySettings.getCurrent();
+    res.json(currencySettings);
+  } catch (error) {
+    console.error('Error fetching currency settings:', error);
+    res.status(500).json({ error: 'Failed to fetch currency settings' });
+  }
+});
+
+// Update currency settings
+app.put('/api/currency-settings', async (req, res) => {
+  try {
+    const { currency_code, currency_symbol, currency_name } = req.body;
+    
+    if (!currency_code || !currency_symbol || !currency_name) {
+      return res.status(400).json({ error: 'Currency code, symbol, and name are required' });
+    }
+
+    const updatedSettings = await CurrencySettings.update({
+      currency_code: currency_code.trim(),
+      currency_symbol: currency_symbol.trim(),
+      currency_name: currency_name.trim()
+    });
+
+    res.json(updatedSettings);
+  } catch (error) {
+    console.error('Error updating currency settings:', error);
+    res.status(500).json({ error: 'Failed to update currency settings' });
+  }
+});
+
+// Get currency history
+app.get('/api/currency-settings/history', async (req, res) => {
+  try {
+    const history = await CurrencySettings.getHistory();
+    res.json(history);
+  } catch (error) {
+    console.error('Error fetching currency history:', error);
+    res.status(500).json({ error: 'Failed to fetch currency history' });
+  }
+});
+
+// Get available currencies
+app.get('/api/currency-settings/available', async (req, res) => {
+  try {
+    const currencies = await CurrencySettings.getAvailableCurrencies();
+    res.json(currencies);
+  } catch (error) {
+    console.error('Error fetching available currencies:', error);
+    res.status(500).json({ error: 'Failed to fetch available currencies' });
   }
 });
 

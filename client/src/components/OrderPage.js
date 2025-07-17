@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const OrderPage = ({ menuItems }) => {
+  const { formatCurrency } = useCurrency();
   const [cart, setCart] = useState([]);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -236,7 +238,7 @@ const OrderPage = ({ menuItems }) => {
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-medium text-secondary-700 text-sm sm:text-base">{item.name}</h4>
                           <span className="text-base sm:text-lg font-semibold text-secondary-600">
-                            ${ensureNumber(item.price).toFixed(2)}
+                            {formatCurrency(ensureNumber(item.price))}
                           </span>
                         </div>
                         <p className="text-xs sm:text-sm text-gray-600 mb-3">{item.description}</p>
@@ -330,7 +332,7 @@ const OrderPage = ({ menuItems }) => {
                     <div key={item.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
                       <div className="flex-1">
                         <h4 className="font-medium text-secondary-700 text-sm">{item.name}</h4>
-                        <p className="text-xs text-gray-600">${ensureNumber(item.price).toFixed(2)} each</p>
+                        <p className="text-xs text-gray-600">{formatCurrency(ensureNumber(item.price))} each</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button
@@ -401,26 +403,26 @@ const OrderPage = ({ menuItems }) => {
                 <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal:</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{formatCurrency(subtotal)}</span>
                   </div>
                   
                   {taxInfo.taxAmount > 0 && (
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
-                      <span>${taxInfo.taxAmount.toFixed(2)}</span>
+                      <span>{formatCurrency(taxInfo.taxAmount)}</span>
                     </div>
                   )}
                   
                   {tipAmount > 0 && (
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>Tip:</span>
-                      <span>${tipAmount.toFixed(2)}</span>
+                      <span>{formatCurrency(tipAmount)}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
                     <span>Total:</span>
-                    <span className="text-secondary-600">${total.toFixed(2)}</span>
+                    <span className="text-secondary-600">{formatCurrency(total)}</span>
                   </div>
                 </div>
               )}
@@ -495,7 +497,7 @@ const OrderPage = ({ menuItems }) => {
                 <div key={item.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
                   <div className="flex-1">
                     <h4 className="font-medium text-secondary-700">{item.name}</h4>
-                    <p className="text-sm text-gray-600">${ensureNumber(item.price).toFixed(2)} each</p>
+                                            <p className="text-sm text-gray-600">{formatCurrency(ensureNumber(item.price))} each</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
@@ -566,26 +568,26 @@ const OrderPage = ({ menuItems }) => {
             <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                                    <span>{formatCurrency(subtotal)}</span>
               </div>
               
               {taxInfo.taxAmount > 0 && (
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
-                  <span>${taxInfo.taxAmount.toFixed(2)}</span>
+                  <span>{formatCurrency(taxInfo.taxAmount)}</span>
                 </div>
               )}
               
               {tipAmount > 0 && (
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Tip:</span>
-                  <span>${tipAmount.toFixed(2)}</span>
+                  <span>{formatCurrency(tipAmount)}</span>
                 </div>
               )}
               
               <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
                 <span>Total:</span>
-                <span className="text-secondary-600">${total.toFixed(2)}</span>
+                <span className="text-secondary-600">{formatCurrency(total)}</span>
               </div>
             </div>
           )}

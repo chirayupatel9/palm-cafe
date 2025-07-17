@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X } from 'lucide-react';
+import { Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X, DollarSign } from 'lucide-react';
 import axios from 'axios';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
 import CategoryManagement from './components/CategoryManagement';
 import InvoiceHistory from './components/InvoiceHistory';
 import TaxSettings from './components/TaxSettings';
+import CurrencySettings from './components/CurrencySettings';
 
 // Configure axios base URL
 axios.defaults.baseURL = 'http://localhost:5000/api';
@@ -83,6 +85,8 @@ function App() {
         return <InvoiceHistory />;
       case 'tax':
         return <TaxSettings />;
+      case 'currency':
+        return <CurrencySettings />;
       default:
         return <OrderPage menuItems={menuItems} />;
     }
@@ -94,6 +98,7 @@ function App() {
     { id: 'menu', label: 'Menu Management', icon: Settings },
     { id: 'history', label: 'Invoice History', icon: Receipt },
     { id: 'tax', label: 'Tax Settings', icon: Calculator },
+    { id: 'currency', label: 'Currency Settings', icon: DollarSign },
   ];
 
   if (loading) {
@@ -111,8 +116,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-accent-50">
-      <Toaster position="top-right" />
+    <CurrencyProvider>
+      <div className="min-h-screen bg-accent-50">
+        <Toaster position="top-right" />
       
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-accent-200">
@@ -197,6 +203,7 @@ function App() {
         {renderPage()}
       </main>
     </div>
+    </CurrencyProvider>
   );
 }
 

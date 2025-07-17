@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Download, Upload, FolderOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
+  const { formatCurrency } = useCurrency();
   const [editingId, setEditingId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -444,7 +446,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-semibold text-secondary-600">
-                              ${ensureNumber(item.price).toFixed(2)}
+                              {formatCurrency(ensureNumber(item.price))}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -559,7 +561,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                       <p className="text-sm text-gray-600 mb-2">{item.description}</p>
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-semibold text-secondary-600">
-                          ${ensureNumber(item.price).toFixed(2)}
+                          {formatCurrency(ensureNumber(item.price))}
                         </span>
                         <span className="text-gray-500">Sort: {item.sort_order || 0}</span>
                       </div>

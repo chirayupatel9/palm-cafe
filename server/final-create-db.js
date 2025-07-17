@@ -66,6 +66,20 @@ async function createDatabase() {
     `);
     console.log('✅ tax_settings table created');
     
+    // currency_settings table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS currency_settings (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        currency_code VARCHAR(3) NOT NULL DEFAULT 'USD',
+        currency_symbol VARCHAR(5) NOT NULL DEFAULT '$',
+        currency_name VARCHAR(50) NOT NULL DEFAULT 'US Dollar',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ currency_settings table created');
+    
     // Create invoices table with updated structure
     await connection.query(`
       CREATE TABLE IF NOT EXISTS invoices (
@@ -137,6 +151,21 @@ async function createDatabase() {
       console.log('✅ Default tax setting inserted (8.5% Sales Tax)');
     } else {
       console.log('✅ Tax settings already exist');
+    }
+    
+    // Insert default currency setting
+    console.log('💱 Checking for default currency settings...');
+    const [currencyRows] = await connection.query('SELECT COUNT(*) as count FROM currency_settings');
+    
+    if (currencyRows[0].count === 0) {
+      console.log('📝 Inserting default currency setting...');
+      await connection.query(
+        'INSERT INTO currency_settings (currency_code, currency_symbol, currency_name) VALUES (?, ?, ?)',
+        ['USD', '$', 'US Dollar']
+      );
+      console.log('✅ Default currency setting inserted (USD)');
+    } else {
+      console.log('✅ Currency settings already exist');
     }
     
     // Show tables
