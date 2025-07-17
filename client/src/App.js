@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Coffee, Receipt, Settings, Plus, Calculator } from 'lucide-react';
+import { Coffee, Receipt, Settings, Plus, Calculator, FolderOpen } from 'lucide-react';
 import axios from 'axios';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
+import CategoryManagement from './components/CategoryManagement';
 import InvoiceHistory from './components/InvoiceHistory';
 import TaxSettings from './components/TaxSettings';
 
@@ -70,6 +71,8 @@ function App() {
             onDelete={deleteMenuItem}
           />
         );
+      case 'categories':
+        return <CategoryManagement />;
       case 'history':
         return <InvoiceHistory />;
       case 'tax':
@@ -117,6 +120,17 @@ function App() {
             >
               <Plus className="h-4 w-4 mr-2" />
               New Order
+            </button>
+            <button
+              onClick={() => setCurrentPage('categories')}
+              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
+                currentPage === 'categories'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <FolderOpen className="h-4 w-4 mr-2" />
+              Categories
             </button>
             <button
               onClick={() => setCurrentPage('menu')}

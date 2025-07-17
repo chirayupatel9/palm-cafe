@@ -1,370 +1,230 @@
-# Palm Cafe - Cafe Management System
+# Palm Cafe Management System
 
-A modern, full-stack cafe management application with invoice generation capabilities. Built with React frontend and Node.js backend with MySQL database.
+A comprehensive cafe management system built with React frontend and Node.js backend, featuring menu management, invoice generation, tax/tip calculations, and Excel import/export functionality.
 
 ## Features
 
-### 🛒 Order Management
-- Add items to cart with quantity controls
-- Real-time total calculation
-- Customer information collection
-- Professional PDF invoice generation
+### 🍽️ Menu Management
+- **Category-based organization**: Organize menu items into categories (Beverages, Food, Desserts, etc.)
+- **Full CRUD operations**: Add, edit, delete, and view menu items
+- **Sort order support**: Control the display order of categories and items
+- **Excel Import/Export**: Bulk import menu items from Excel files and export current menu
 
-### 📋 Menu Management
-- Add, edit, and delete menu items
-- Update pricing in real-time
-- Item descriptions and categorization
-- Intuitive table interface
+### 💰 Tax & Tip System
+- **Configurable tax rates**: Set and manage tax rates through the admin interface
+- **Tax history tracking**: View historical tax rate changes
+- **Tip selection**: Quick tip buttons (0%, 10%, 15%, 18%, 20%, 25%) or custom amounts
+- **Automatic calculations**: Real-time subtotal, tax, and tip calculations
 
-### 📊 Invoice History
-- View all past invoices
-- Download invoices as PDF
-- Revenue and order statistics
-- Customer tracking
+### 📄 Invoice Generation
+- **Professional PDF invoices**: Generate and view invoices in new browser tabs
+- **Complete breakdown**: Shows subtotal, tax, tip, and total amounts
+- **Invoice history**: View and download past invoices
+- **Customer information**: Store customer name and phone number
 
-### 🎨 Modern UI
-- Responsive design for all devices
-- Beautiful Tailwind CSS styling
-- Intuitive navigation
-- Toast notifications for user feedback
+### 📊 Analytics & Reporting
+- **Sales statistics**: Total revenue, orders, unique customers
+- **Tax and tip tracking**: Separate tracking of tax collected and tips received
+- **Invoice history**: Complete record of all transactions
 
-### 🗄️ Database
-- MySQL database for data persistence
-- Relational data structure
-- Transaction support for invoices
-- Automatic database initialization
-
-## Tech Stack
-
-### Frontend
-- **React 18** - Modern UI framework
-- **Tailwind CSS** - Utility-first CSS framework
-- **Lucide React** - Beautiful icons
-- **React Hot Toast** - Toast notifications
-- **Axios** - HTTP client
+## Technology Stack
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **MySQL2** - MySQL database driver
-- **PDFKit** - PDF generation
-- **UUID** - Unique ID generation
-- **CORS** - Cross-origin resource sharing
+- **Node.js** with Express.js
+- **MySQL** database with connection pooling
+- **PDFKit** for invoice generation
+- **XLSX** for Excel file processing
+- **Multer** for file uploads
 
-## Prerequisites
+### Frontend
+- **React** with functional components and hooks
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+- **React Hot Toast** for notifications
+- **Axios** for API communication
 
+## Database Schema
+
+### Tables
+- `categories` - Menu categories with sort order
+- `menu_items` - Menu items linked to categories
+- `tax_settings` - Tax rate configuration and history
+- `invoices` - Invoice records with tax/tip breakdown
+- `invoice_items` - Individual items in each invoice
+
+## Installation & Setup
+
+### Prerequisites
 - Node.js (v14 or higher)
-- MySQL Server (v8.0 or higher)
+- MySQL (v8.0 or higher)
 - npm or yarn
 
-## Database Setup
-
-### 1. Install MySQL Server
-
-**Windows:**
-- Download and install MySQL from [mysql.com](https://dev.mysql.com/downloads/mysql/)
-- Or use XAMPP/WAMP which includes MySQL
-
-**macOS:**
-```bash
-brew install mysql
-brew services start mysql
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt update
-sudo apt install mysql-server
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-### 2. Create Database
-
-1. **Access MySQL:**
-   ```bash
-   mysql -u root -p
-   ```
-
-2. **Run the setup script:**
-   ```bash
-   mysql -u root -p < server/setup-database.sql
-   ```
-
-   Or manually create the database:
-   ```sql
-   CREATE DATABASE palm_cafe;
-   USE palm_cafe;
-   ```
-
-### 3. Configure Environment Variables
-
-1. **Copy the example environment file:**
-   ```bash
-   cp server/env.example server/.env
-   ```
-
-2. **Edit the `.env` file with your database credentials:**
-   ```env
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=your_mysql_password
-   DB_NAME=palm_cafe
-   DB_PORT=3306
-   PORT=5000
-   NODE_ENV=development
-   ```
-
-## Installation
-
-### 1. Clone the repository
+### 1. Clone the Repository
 ```bash
 git clone <repository-url>
 cd palm-cafe
 ```
 
-### 2. Install all dependencies
+### 2. Backend Setup
 ```bash
-npm run install-all
-```
-
-### 3. Start the development servers
-```bash
-npm run dev
-```
-
-This will start both the backend server (port 5000) and frontend development server (port 3000).
-
-### Manual Installation
-
-If you prefer to install dependencies separately:
-
-```bash
-# Install root dependencies
-npm install
-
-# Install backend dependencies
 cd server
 npm install
+```
 
-# Install frontend dependencies
+### 3. Database Configuration
+Create a `.env` file in the server directory:
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_PORT=3306
+DB_NAME=palm_cafe
+```
+
+### 4. Database Migration
+```bash
+# Run the categories migration
+node migrate-categories.js
+
+# Run the invoice table migration (if needed)
+node migrate-invoices-table.js
+```
+
+### 5. Frontend Setup
+```bash
 cd ../client
 npm install
 ```
 
-## Usage
+### 6. Start the Application
+```bash
+# Start backend (from server directory)
+npm run dev
 
-### Starting the Application
+# Start frontend (from client directory)
+npm start
+```
 
-1. **Development mode** (recommended for development):
-   ```bash
-   npm run dev
-   ```
+## Usage Guide
 
-2. **Production mode**:
-   ```bash
-   # Build the frontend
-   npm run build
-   
-   # Start the backend server
-   npm run server
-   ```
+### Menu Management
 
-### Accessing the Application
+#### Adding Categories
+1. Navigate to **Categories** in the main menu
+2. Click **Add New Category**
+3. Enter category name, description, and sort order
+4. Click **Save**
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000/api
-- **Health Check**: http://localhost:5000/api/health
+#### Adding Menu Items
+1. Navigate to **Menu Management**
+2. Click **Add New Item**
+3. Select a category, enter item details, and set sort order
+4. Click **Save**
 
-## Database Schema
+#### Excel Import/Export
+1. **Export**: Click **Export Excel** to download current menu
+2. **Import**: Click **Import Excel** and select a properly formatted Excel file
+3. **Template**: Use the generated `sample-menu-template.xlsx` as a reference
 
-### Tables
+### Tax Settings
+1. Navigate to **Tax Settings**
+2. View current tax rate and history
+3. Click **Edit Settings** to update tax rate and name
+4. Changes apply immediately to new orders
 
-1. **menu_items**
-   - `id` (VARCHAR(36)) - Primary key
-   - `name` (VARCHAR(255)) - Item name
-   - `description` (TEXT) - Item description
-   - `price` (DECIMAL(10,2)) - Item price
-   - `created_at` (TIMESTAMP) - Creation timestamp
-   - `updated_at` (TIMESTAMP) - Last update timestamp
+### Creating Orders
+1. Navigate to **New Order**
+2. Browse menu items organized by category
+3. Click items to add to cart
+4. Enter customer information
+5. Select tip amount (quick buttons or custom)
+6. Review breakdown (subtotal, tax, tip, total)
+7. Click **Generate & Open Invoice**
 
-2. **invoices**
-   - `invoice_number` (VARCHAR(20)) - Primary key
-   - `customer_name` (VARCHAR(255)) - Customer name
-   - `customer_phone` (VARCHAR(50)) - Customer phone
-   - `total` (DECIMAL(10,2)) - Invoice total
-   - `date` (TIMESTAMP) - Invoice date
-   - `created_at` (TIMESTAMP) - Creation timestamp
+### Invoice History
+1. Navigate to **Invoice History**
+2. View all past invoices with tax/tip breakdown
+3. Click download icon to view PDF invoice
+4. Review sales statistics and analytics
 
-3. **invoice_items**
-   - `id` (INT) - Auto-increment primary key
-   - `invoice_number` (VARCHAR(20)) - Foreign key to invoices
-   - `menu_item_id` (VARCHAR(36)) - Menu item reference
-   - `item_name` (VARCHAR(255)) - Item name at time of purchase
-   - `price` (DECIMAL(10,2)) - Price at time of purchase
-   - `quantity` (INT) - Quantity ordered
-   - `total` (DECIMAL(10,2)) - Line item total
+## Excel Import Format
+
+### Required Sheet: "Menu Items"
+| Column | Required | Description |
+|--------|----------|-------------|
+| Category | No | Category name (will be created if doesn't exist) |
+| Item Name | Yes | Name of the menu item |
+| Description | No | Item description |
+| Price | Yes | Item price (numeric) |
+| Sort Order | No | Display order (numeric) |
+
+### Optional Sheet: "Categories"
+| Column | Description |
+|--------|-------------|
+| Category Name | Name of the category |
+| Description | Category description |
+| Sort Order | Display order (numeric) |
 
 ## API Endpoints
 
-### Menu Management
+### Categories
+- `GET /api/categories` - Get all categories
+- `GET /api/categories/with-counts` - Get categories with item counts
+- `POST /api/categories` - Create new category
+- `PUT /api/categories/:id` - Update category
+- `DELETE /api/categories/:id` - Delete category
+
+### Menu Items
 - `GET /api/menu` - Get all menu items
-- `POST /api/menu` - Add new menu item
+- `GET /api/menu/grouped` - Get menu items grouped by category
+- `POST /api/menu` - Create new menu item
 - `PUT /api/menu/:id` - Update menu item
 - `DELETE /api/menu/:id` - Delete menu item
+- `GET /api/menu/export` - Export menu to Excel
+- `POST /api/menu/import` - Import menu from Excel
 
-### Invoice Management
+### Tax Settings
+- `GET /api/tax-settings` - Get current tax settings
+- `PUT /api/tax-settings` - Update tax settings
+- `GET /api/tax-settings/history` - Get tax history
+- `POST /api/calculate-tax` - Calculate tax for subtotal
+
+### Invoices
 - `GET /api/invoices` - Get all invoices
 - `POST /api/invoices` - Create new invoice
-- `GET /api/invoices/:invoiceNumber/download` - Download invoice PDF
+- `GET /api/invoices/:id/download` - Download invoice PDF
+- `GET /api/statistics` - Get sales statistics
 
-### Statistics
-- `GET /api/statistics` - Get revenue and order statistics
-
-### Health Check
-- `GET /api/health` - Server and database health status
-
-## Project Structure
+## File Structure
 
 ```
 palm-cafe/
-├── client/                 # React frontend
-│   ├── public/
+├── server/
+│   ├── models/
+│   │   ├── category.js
+│   │   ├── menuItem.js
+│   │   ├── invoice.js
+│   │   └── taxSettings.js
+│   ├── config/
+│   │   └── database.js
+│   ├── migrations/
+│   │   ├── migrate-categories.js
+│   │   └── migrate-invoices-table.js
+│   ├── index.js
+│   └── package.json
+├── client/
 │   ├── src/
-│   │   ├── components/     # React components
+│   │   ├── components/
 │   │   │   ├── OrderPage.js
 │   │   │   ├── MenuManagement.js
-│   │   │   └── InvoiceHistory.js
+│   │   │   ├── CategoryManagement.js
+│   │   │   ├── InvoiceHistory.js
+│   │   │   └── TaxSettings.js
 │   │   ├── App.js
 │   │   └── index.js
-│   ├── package.json
-│   └── tailwind.config.js
-├── server/                 # Node.js backend
-│   ├── config/            # Database configuration
-│   │   └── database.js
-│   ├── models/            # Database models
-│   │   ├── menuItem.js
-│   │   └── invoice.js
-│   ├── setup-database.sql # Database setup script
-│   ├── env.example        # Environment variables example
-│   ├── index.js           # Main server file
 │   └── package.json
-├── package.json
 └── README.md
 ```
-
-## Features in Detail
-
-### Order Page
-- Browse menu items in a grid layout
-- Add items to cart with one click
-- Adjust quantities with +/- buttons
-- Remove items from cart
-- Enter customer information
-- Generate and download PDF invoices
-
-### Menu Management
-- Add new menu items with name, description, and price
-- Edit existing items inline
-- Delete items with confirmation
-- Real-time validation
-- Responsive table design
-
-### Invoice History
-- View all generated invoices
-- Download PDF invoices
-- Revenue statistics
-- Customer analytics
-- Order tracking
-
-## Troubleshooting
-
-### Database Connection Issues
-
-1. **Check MySQL service is running:**
-   ```bash
-   # Windows
-   net start mysql
-   
-   # macOS
-   brew services start mysql
-   
-   # Linux
-   sudo systemctl start mysql
-   ```
-
-2. **Verify database credentials in `.env` file**
-
-3. **Test database connection:**
-   ```bash
-   mysql -u root -p -h localhost
-   ```
-
-4. **Check if database exists:**
-   ```sql
-   SHOW DATABASES;
-   USE palm_cafe;
-   SHOW TABLES;
-   ```
-
-### Common Issues
-
-1. **"Access denied" error:**
-   - Check username and password in `.env`
-   - Ensure MySQL user has proper permissions
-
-2. **"Database not found" error:**
-   - Run the setup script: `mysql -u root -p < server/setup-database.sql`
-
-3. **Port already in use:**
-   - Change PORT in `.env` file
-   - Or kill the process using the port
-
-## Customization
-
-### Styling
-The app uses Tailwind CSS with a custom color scheme. You can modify colors in `client/tailwind.config.js`:
-
-```javascript
-colors: {
-  primary: {
-    50: '#fef7ee',
-    100: '#fdedd6',
-    // ... customize your brand colors
-  }
-}
-```
-
-### Database Configuration
-Edit the database settings in `server/.env`:
-
-```env
-DB_HOST=your_host
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database
-DB_PORT=3306
-```
-
-### PDF Template
-Customize the invoice PDF template in the `generatePDF` function in `server/index.js`.
-
-## Deployment
-
-### Frontend (React)
-- Build the app: `npm run build`
-- Deploy the `build` folder to your hosting service
-- Update the API base URL in `client/src/App.js` if needed
-
-### Backend (Node.js)
-- Deploy to platforms like Heroku, Vercel, or AWS
-- Set environment variables for database connection
-- Ensure proper CORS configuration for production
-
-### Database (MySQL)
-- Use a managed MySQL service (AWS RDS, Google Cloud SQL, etc.)
-- Or set up a MySQL server on your hosting provider
-- Update the database connection settings in production
 
 ## Contributing
 
@@ -380,8 +240,4 @@ This project is licensed under the MIT License.
 
 ## Support
 
-For support or questions, please open an issue in the repository.
-
----
-
-**Palm Cafe** - Professional cafe management made simple! ☕ 
+For support or questions, please open an issue in the repository. 

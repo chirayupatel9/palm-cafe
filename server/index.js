@@ -1,14 +1,35 @@
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const XLSX = require('xlsx');
 const { v4: uuidv4 } = require('uuid');
 const PDFDocument = require('pdfkit');
 const { initializeDatabase, testConnection } = require('./config/database');
 const MenuItem = require('./models/menuItem');
+const Category = require('./models/category');
 const Invoice = require('./models/invoice');
 const TaxSettings = require('./models/taxSettings');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.mimetype === 'application/vnd.ms-excel' ||
+        file.originalname.endsWith('.xlsx') ||
+        file.originalname.endsWith('.xls')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only Excel files are allowed'));
+    }
+  }
+});
 
 // Middleware
 app.use(cors());
@@ -108,6 +129,93 @@ const generatePDF = (invoice) => {
 
 // API Routes
 
+// Get all categories
+app.get('/api/categories', async (req, res) => {
+  try {
+    const categories = await Category.getAll();
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+// Get categories with item counts
+app.get('/api/categories/with-counts', async (req, res) => {
+  try {
+    const categories = await Category.getWithItemCounts();
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories with counts:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+// Add new category
+app.post('/api/categories', async (req, res) => {
+  try {
+    const { name, description, sort_order } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ error: 'Category name is required' });
+    }
+
+    const newCategory = {
+      id: uuidv4(),
+      name: name.trim(),
+      description: description ? description.trim() : '',
+      sort_order: sort_order || 0
+    };
+
+    const createdCategory = await Category.create(newCategory);
+    res.status(201).json(createdCategory);
+  } catch (error) {
+    console.error('Error creating category:', error);
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+// Update category
+app.put('/api/categories/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, sort_order, is_active } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ error: 'Category name is required' });
+    }
+
+    const updatedCategory = await Category.update(id, {
+      name: name.trim(),
+      description: description ? description.trim() : '',
+      sort_order: sort_order || 0,
+      is_active: is_active !== undefined ? is_active : true
+    });
+
+    res.json(updatedCategory);
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+// Delete category
+app.delete('/api/categories/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Category.delete(id);
+    
+    if (!deleted) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
 // Get all menu items
 app.get('/api/menu', async (req, res) => {
   try {
@@ -119,20 +227,33 @@ app.get('/api/menu', async (req, res) => {
   }
 });
 
+// Get menu items grouped by category
+app.get('/api/menu/grouped', async (req, res) => {
+  try {
+    const menuItems = await MenuItem.getGroupedByCategory();
+    res.json(menuItems);
+  } catch (error) {
+    console.error('Error fetching menu items grouped:', error);
+    res.status(500).json({ error: 'Failed to fetch menu items' });
+  }
+});
+
 // Add new menu item
 app.post('/api/menu', async (req, res) => {
   try {
-    const { name, description, price } = req.body;
+    const { category_id, name, description, price, sort_order } = req.body;
     
-    if (!name || !price) {
-      return res.status(400).json({ error: 'Name and price are required' });
+    if (!category_id || !name || !price) {
+      return res.status(400).json({ error: 'Category, name and price are required' });
     }
 
     const newItem = {
       id: uuidv4(),
+      category_id,
       name: name.trim(),
       description: description ? description.trim() : '',
-      price: parseFloat(price)
+      price: parseFloat(price),
+      sort_order: sort_order || 0
     };
 
     const createdItem = await MenuItem.create(newItem);
@@ -147,16 +268,19 @@ app.post('/api/menu', async (req, res) => {
 app.put('/api/menu/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price } = req.body;
+    const { category_id, name, description, price, sort_order, is_active } = req.body;
     
-    if (!name || !price) {
-      return res.status(400).json({ error: 'Name and price are required' });
+    if (!category_id || !name || !price) {
+      return res.status(400).json({ error: 'Category, name and price are required' });
     }
 
     const updatedItem = await MenuItem.update(id, {
+      category_id,
       name: name.trim(),
       description: description ? description.trim() : '',
-      price: parseFloat(price)
+      price: parseFloat(price),
+      sort_order: sort_order || 0,
+      is_active: is_active !== undefined ? is_active : true
     });
 
     res.json(updatedItem);
@@ -180,6 +304,152 @@ app.delete('/api/menu/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting menu item:', error);
     res.status(500).json({ error: 'Failed to delete menu item' });
+  }
+});
+
+// Export menu to Excel
+app.get('/api/menu/export', async (req, res) => {
+  try {
+    const menuItems = await MenuItem.getAll();
+    const categories = await Category.getAll();
+    
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    
+    // Menu items worksheet
+    const menuData = menuItems.map(item => ({
+      'Category': item.category_name || 'Uncategorized',
+      'Item Name': item.name,
+      'Description': item.description || '',
+      'Price': item.price,
+      'Sort Order': item.sort_order
+    }));
+    
+    const menuWorksheet = XLSX.utils.json_to_sheet(menuData);
+    XLSX.utils.book_append_sheet(workbook, menuWorksheet, 'Menu Items');
+    
+    // Categories worksheet
+    const categoryData = categories.map(cat => ({
+      'Category Name': cat.name,
+      'Description': cat.description || '',
+      'Sort Order': cat.sort_order
+    }));
+    
+    const categoryWorksheet = XLSX.utils.json_to_sheet(categoryData);
+    XLSX.utils.book_append_sheet(workbook, categoryWorksheet, 'Categories');
+    
+    // Generate buffer
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    
+    // Set headers for download
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=palm-cafe-menu.xlsx');
+    
+    res.send(buffer);
+  } catch (error) {
+    console.error('Error exporting menu:', error);
+    res.status(500).json({ error: 'Failed to export menu' });
+  }
+});
+
+// Import menu from Excel
+app.post('/api/menu/import', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Read Excel file
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const menuSheet = workbook.Sheets['Menu Items'];
+    
+    if (!menuSheet) {
+      return res.status(400).json({ error: 'Menu Items sheet not found in Excel file' });
+    }
+
+    // Convert to JSON
+    const menuData = XLSX.utils.sheet_to_json(menuSheet);
+    
+    if (menuData.length === 0) {
+      return res.status(400).json({ error: 'No data found in Menu Items sheet' });
+    }
+
+    // Get existing categories for mapping
+    const categories = await Category.getAll();
+    const categoryMap = {};
+    categories.forEach(cat => {
+      categoryMap[cat.name.toLowerCase()] = cat.id;
+    });
+
+    // Process menu items
+    const itemsToImport = [];
+    const errors = [];
+
+    for (let i = 0; i < menuData.length; i++) {
+      const row = menuData[i];
+      const rowNumber = i + 2; // Excel rows start at 1, but we have header
+
+      try {
+        // Validate required fields
+        if (!row['Item Name'] || !row['Price']) {
+          errors.push(`Row ${rowNumber}: Item Name and Price are required`);
+          continue;
+        }
+
+        // Find or create category
+        let categoryId = null;
+        if (row['Category']) {
+          const categoryName = row['Category'].toString().trim();
+          categoryId = categoryMap[categoryName.toLowerCase()];
+          
+          if (!categoryId) {
+            // Create new category
+            const newCategory = {
+              id: uuidv4(),
+              name: categoryName,
+              description: '',
+              sort_order: categories.length + 1
+            };
+            
+            const createdCategory = await Category.create(newCategory);
+            categoryId = createdCategory.id;
+            categoryMap[categoryName.toLowerCase()] = categoryId;
+            categories.push(createdCategory);
+          }
+        }
+
+        // Create menu item
+        const menuItem = {
+          id: uuidv4(),
+          category_id: categoryId,
+          name: row['Item Name'].toString().trim(),
+          description: row['Description'] ? row['Description'].toString().trim() : '',
+          price: parseFloat(row['Price']),
+          sort_order: row['Sort Order'] ? parseInt(row['Sort Order']) : 0
+        };
+
+        itemsToImport.push(menuItem);
+      } catch (error) {
+        errors.push(`Row ${rowNumber}: ${error.message}`);
+      }
+    }
+
+    // Import items
+    const importResults = await MenuItem.bulkImport(itemsToImport);
+    
+    const successCount = importResults.filter(r => r.success).length;
+    const failureCount = importResults.filter(r => !r.success).length;
+
+    res.json({
+      message: `Import completed. ${successCount} items imported successfully, ${failureCount} failed.`,
+      successCount,
+      failureCount,
+      errors: errors.concat(importResults.filter(r => !r.success).map(r => r.error))
+    });
+
+  } catch (error) {
+    console.error('Error importing menu:', error);
+    res.status(500).json({ error: 'Failed to import menu' });
   }
 });
 

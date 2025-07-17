@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Trash2, Receipt, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -11,6 +11,7 @@ const OrderPage = ({ menuItems }) => {
   const [tipAmount, setTipAmount] = useState(0);
   const [tipPercentage, setTipPercentage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [groupedMenuItems, setGroupedMenuItems] = useState({});
 
   const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -19,6 +20,19 @@ const OrderPage = ({ menuItems }) => {
     const num = parseFloat(value);
     return isNaN(num) ? 0 : num;
   };
+
+  // Group menu items by category
+  useEffect(() => {
+    const grouped = menuItems.reduce((groups, item) => {
+      const categoryName = item.category_name || 'Uncategorized';
+      if (!groups[categoryName]) {
+        groups[categoryName] = [];
+      }
+      groups[categoryName].push(item);
+      return groups;
+    }, {});
+    setGroupedMenuItems(grouped);
+  }, [menuItems]);
 
   // Calculate subtotal
   const getSubtotal = () => {
@@ -184,33 +198,52 @@ const OrderPage = ({ menuItems }) => {
       <div className="lg:col-span-2">
         <div className="card">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Menu Items</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {menuItems.map((item) => (
-              <div
-                key={item.id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => addToCart(item)}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-gray-900">{item.name}</h3>
-                  <span className="text-lg font-semibold text-primary-600">
-                    ${ensureNumber(item.price).toFixed(2)}
-                  </span>
+          
+          {Object.keys(groupedMenuItems).length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+              <p>No menu items available</p>
+              <p className="text-sm">Add items in Menu Management</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupedMenuItems).map(([categoryName, items]) => (
+                <div key={categoryName} className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <FolderOpen className="h-5 w-5 mr-2 text-primary-500" />
+                    {categoryName}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => addToCart(item)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium text-gray-900">{item.name}</h4>
+                          <span className="text-lg font-semibold text-primary-600">
+                            ${ensureNumber(item.price).toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{item.description}</p>
+                        <button
+                          className="btn-primary w-full flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(item);
+                          }}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add to Cart
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">{item.description}</p>
-                <button
-                  className="btn-primary w-full flex items-center justify-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addToCart(item);
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
