@@ -53,15 +53,15 @@ async function createDatabase() {
     `);
     console.log('✅ menu_items table created');
     
-    // invoices table
+    // Create invoices table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS invoices (
         invoice_number VARCHAR(20) PRIMARY KEY,
         customer_name VARCHAR(255) NOT NULL,
         customer_phone VARCHAR(50),
         total DECIMAL(10,2) NOT NULL,
-        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
     console.log('✅ invoices table created');

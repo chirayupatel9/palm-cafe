@@ -23,19 +23,27 @@ const InvoiceHistory = () => {
     }
   };
 
-  const downloadInvoice = async (invoiceNumber) => {
+  const openInvoice = async (invoiceNumber) => {
     try {
       const response = await axios.get(`/api/invoices/${invoiceNumber}/download`);
       
-      const link = document.createElement('a');
-      link.href = `data:application/pdf;base64,${response.data.pdf}`;
-      link.download = `invoice-${invoiceNumber}.pdf`;
-      link.click();
+      // Create blob and open PDF in new tab
+      const pdfBlob = new Blob([Uint8Array.from(atob(response.data.pdf), c => c.charCodeAt(0))], {
+        type: 'application/pdf'
+      });
       
-      toast.success('Invoice downloaded successfully');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+      
+      // Clean up the URL object after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 1000);
+      
+      toast.success('Invoice opened in new tab');
     } catch (error) {
       console.error('Error downloading invoice:', error);
-      toast.error('Failed to download invoice');
+      toast.error('Failed to open invoice');
     }
   };
 
@@ -149,9 +157,9 @@ const InvoiceHistory = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => downloadInvoice(invoice.invoiceNumber)}
+                        onClick={() => openInvoice(invoice.invoiceNumber)}
                         className="text-primary-600 hover:text-primary-900 flex items-center justify-end w-full"
-                        title="Download Invoice"
+                        title="Open Invoice"
                       >
                         <Download className="h-4 w-4" />
                       </button>

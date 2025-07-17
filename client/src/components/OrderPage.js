@@ -79,18 +79,25 @@ const OrderPage = ({ menuItems }) => {
 
       const response = await axios.post('/api/invoices', orderData);
       
-      // Download the PDF
-      const link = document.createElement('a');
-      link.href = `data:application/pdf;base64,${response.data.pdf}`;
-      link.download = `invoice-${response.data.invoiceNumber}.pdf`;
-      link.click();
+      // Create blob and open PDF in new tab
+      const pdfBlob = new Blob([Uint8Array.from(atob(response.data.pdf), c => c.charCodeAt(0))], {
+        type: 'application/pdf'
+      });
+      
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+      
+      // Clean up the URL object after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 1000);
 
       // Clear cart and form
       setCart([]);
       setCustomerName('');
       setCustomerPhone('');
       
-      toast.success('Invoice generated successfully!');
+      toast.success('Invoice generated and opened!');
     } catch (error) {
       console.error('Error generating invoice:', error);
       toast.error('Failed to generate invoice');
@@ -234,7 +241,7 @@ const OrderPage = ({ menuItems }) => {
             className="btn-primary w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Receipt className="h-4 w-4 mr-2" />
-            Generate Invoice
+            Generate & Open Invoice
           </button>
         </div>
       </div>

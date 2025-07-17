@@ -103,11 +103,14 @@ class Invoice {
 
       const { invoiceNumber, customerName, customerPhone, items, total, date } = invoiceData;
 
+      // Convert ISO datetime to MySQL datetime format
+      const mysqlDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
+
       // Insert invoice
       await connection.execute(`
         INSERT INTO invoices (invoice_number, customer_name, customer_phone, total, date)
         VALUES (?, ?, ?, ?, ?)
-      `, [invoiceNumber, customerName, customerPhone, total, date]);
+      `, [invoiceNumber, customerName, customerPhone, total, mysqlDate]);
 
       // Insert invoice items
       for (const item of items) {
