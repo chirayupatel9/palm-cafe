@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Download, Upload, FolderOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
   const [editingId, setEditingId] = useState(null);
@@ -16,22 +17,18 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = 'http://localhost:5000/api';
-
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories`);
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      const data = await response.json();
-      setCategories(data);
+      const response = await axios.get('/categories');
+      setCategories(response.data);
       
       // Set default category for new items
-      if (data.length > 0 && !formData.category_id) {
-        setFormData(prev => ({ ...prev, category_id: data[0].id }));
+      if (response.data.length > 0 && !formData.category_id) {
+        setFormData(prev => ({ ...prev, category_id: response.data[0].id }));
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -133,11 +130,9 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
   const handleExport = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/menu/export`);
-      if (!response.ok) throw new Error('Failed to export menu');
+      const response = await axios.get('/menu/export', { responseType: 'blob' });
       
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(response.data);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'palm-cafe-menu.xlsx';
@@ -169,15 +164,13 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${API_BASE_URL}/menu/import`, {
-        method: 'POST',
-        body: formData
+      const response = await axios.post('/menu/import', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (!response.ok) throw new Error('Failed to import menu');
-      
-      const result = await response.json();
-      toast.success(result.message);
+      toast.success(response.data.message);
       
       // Refresh the menu items
       window.location.reload();
@@ -209,7 +202,17 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Menu Management</h2>
+        <div className="flex items-center">
+          <img 
+            src="/images/palm-cafe-logo.png" 
+            alt="Palm Cafe Logo" 
+            className="h-10 w-10 mr-3"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Menu Management</h2>
+            <p className="text-sm text-gray-600">Manage your cafe's menu items and categories</p>
+          </div>
+        </div>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           <label className="btn-secondary flex items-center justify-center cursor-pointer text-sm">
             <Upload className="h-4 w-4 mr-2" />

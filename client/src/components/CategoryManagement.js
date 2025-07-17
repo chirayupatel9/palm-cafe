@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, FolderOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -13,18 +14,14 @@ const CategoryManagement = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:5000/api';
-
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/with-counts`);
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      const data = await response.json();
-      setCategories(data);
+      const response = await axios.get('/categories/with-counts');
+      setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
       toast.error('Failed to load categories');
@@ -50,35 +47,19 @@ const CategoryManagement = () => {
 
     try {
       if (editingId) {
-        const response = await fetch(`${API_BASE_URL}/categories/${editingId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            description: formData.description.trim(),
-            sort_order: parseInt(formData.sort_order) || 0,
-            is_active: true
-          }),
+        const response = await axios.put(`/categories/${editingId}`, {
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          sort_order: parseInt(formData.sort_order) || 0,
+          is_active: true
         });
-
-        if (!response.ok) throw new Error('Failed to update category');
         toast.success('Category updated successfully');
       } else {
-        const response = await fetch(`${API_BASE_URL}/categories`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            description: formData.description.trim(),
-            sort_order: parseInt(formData.sort_order) || 0
-          }),
+        const response = await axios.post('/categories', {
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          sort_order: parseInt(formData.sort_order) || 0
         });
-
-        if (!response.ok) throw new Error('Failed to create category');
         toast.success('Category created successfully');
       }
       
@@ -106,11 +87,7 @@ const CategoryManagement = () => {
 
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
-        const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) throw new Error('Failed to delete category');
+        await axios.delete(`/categories/${id}`);
         
         toast.success('Category deleted successfully');
         fetchCategories(); // Refresh the list
@@ -137,7 +114,17 @@ const CategoryManagement = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Category Management</h2>
+        <div className="flex items-center">
+          <img 
+            src="/images/palm-cafe-logo.png" 
+            alt="Palm Cafe Logo" 
+            className="h-10 w-10 mr-3"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Category Management</h2>
+            <p className="text-sm text-gray-600">Organize your menu with categories</p>
+          </div>
+        </div>
         <button
           onClick={() => setShowAddForm(true)}
           className="btn-primary flex items-center justify-center text-sm"

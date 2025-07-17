@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calculator, Edit, Save, X, Calendar } from 'lucide-react';
+import axios from 'axios';
 
 const TaxSettings = () => {
   const [currentSettings, setCurrentSettings] = useState(null);
@@ -12,8 +13,6 @@ const TaxSettings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_BASE_URL = 'http://localhost:5000/api';
-
   useEffect(() => {
     fetchCurrentSettings();
     fetchHistory();
@@ -21,10 +20,8 @@ const TaxSettings = () => {
 
   const fetchCurrentSettings = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tax-settings`);
-      if (!response.ok) throw new Error('Failed to fetch tax settings');
-      const data = await response.json();
-      setCurrentSettings(data);
+      const response = await axios.get('/tax-settings');
+      setCurrentSettings(response.data);
     } catch (error) {
       setError('Failed to load tax settings');
       console.error('Error fetching tax settings:', error);
@@ -35,10 +32,8 @@ const TaxSettings = () => {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tax-settings/history`);
-      if (!response.ok) throw new Error('Failed to fetch tax history');
-      const data = await response.json();
-      setHistory(data);
+      const response = await axios.get('/tax-settings/history');
+      setHistory(response.data);
     } catch (error) {
       console.error('Error fetching tax history:', error);
     }
@@ -73,21 +68,12 @@ const TaxSettings = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/tax-settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tax_rate: taxRate,
-          tax_name: formData.tax_name.trim()
-        }),
+      const response = await axios.put('/tax-settings', {
+        tax_rate: taxRate,
+        tax_name: formData.tax_name.trim()
       });
-
-      if (!response.ok) throw new Error('Failed to update tax settings');
       
-      const updatedSettings = await response.json();
-      setCurrentSettings(updatedSettings);
+      setCurrentSettings(response.data);
       setIsEditing(false);
       setFormData({ tax_rate: '', tax_name: '' });
       setError('');

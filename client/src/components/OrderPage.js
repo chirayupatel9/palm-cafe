@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -13,8 +13,6 @@ const OrderPage = ({ menuItems }) => {
   const [loading, setLoading] = useState(false);
   const [groupedMenuItems, setGroupedMenuItems] = useState({});
   const [showCart, setShowCart] = useState(false);
-
-  const API_BASE_URL = 'http://localhost:5000/api';
 
   // Helper function to ensure price is a number
   const ensureNumber = (value) => {
@@ -36,9 +34,9 @@ const OrderPage = ({ menuItems }) => {
   }, [menuItems]);
 
   // Calculate subtotal
-  const getSubtotal = () => {
+  const getSubtotal = useCallback(() => {
     return cart.reduce((total, item) => total + (ensureNumber(item.price) * item.quantity), 0);
-  };
+  }, [cart]);
 
   // Calculate total with tax and tip
   const getTotal = () => {
@@ -49,7 +47,7 @@ const OrderPage = ({ menuItems }) => {
   // Fetch tax settings and calculate tax
   const calculateTax = async (subtotal) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/calculate-tax`, { subtotal });
+      const response = await axios.post('/calculate-tax', { subtotal });
       setTaxInfo(response.data);
     } catch (error) {
       console.error('Error calculating tax:', error);
@@ -65,7 +63,7 @@ const OrderPage = ({ menuItems }) => {
     } else {
       setTaxInfo({ taxRate: 0, taxName: 'Tax', taxAmount: 0 });
     }
-  }, [cart]);
+  }, [cart, getSubtotal]);
 
   // Handle tip percentage change
   const handleTipPercentageChange = (percentage) => {
@@ -150,7 +148,7 @@ const OrderPage = ({ menuItems }) => {
         date: new Date().toISOString()
       };
 
-      const response = await axios.post(`${API_BASE_URL}/invoices`, orderData);
+      const response = await axios.post('/invoices', orderData);
       
       // Create blob and open PDF in new tab
       const pdfBlob = new Blob([Uint8Array.from(atob(response.data.pdf), c => c.charCodeAt(0))], {
@@ -198,7 +196,17 @@ const OrderPage = ({ menuItems }) => {
       {/* Menu Items */}
       <div className="lg:col-span-2 mb-6 lg:mb-0">
         <div className="card">
-          <h2 className="text-xl font-semibold text-secondary-700 mb-4">Menu Items</h2>
+          <div className="flex items-center justify-center mb-6">
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-16 w-16 mr-4"
+            />
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-secondary-700">Menu Items</h2>
+              <p className="text-sm text-gray-600">Select items to add to your order</p>
+            </div>
+          </div>
           
           {Object.keys(groupedMenuItems).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -269,10 +277,16 @@ const OrderPage = ({ menuItems }) => {
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-lg max-h-[80vh] overflow-y-auto">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-secondary-700 flex items-center">
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Cart ({cart.length})
-                </h2>
+                <div className="flex items-center">
+                  <img 
+                    src="/images/palm-cafe-logo.png" 
+                    alt="Palm Cafe Logo" 
+                    className="h-8 w-8 mr-2"
+                  />
+                  <h2 className="text-xl font-semibold text-secondary-700">
+                    Cart ({cart.length})
+                  </h2>
+                </div>
                 <button
                   onClick={() => setShowCart(false)}
                   className="text-gray-500 hover:text-gray-700"
@@ -428,10 +442,14 @@ const OrderPage = ({ menuItems }) => {
       <div className="hidden lg:block lg:col-span-1">
         <div className="card sticky top-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-secondary-700 flex items-center">
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Cart
-            </h2>
+            <div className="flex items-center">
+              <img 
+                src="/images/palm-cafe-logo.png" 
+                alt="Palm Cafe Logo" 
+                className="h-8 w-8 mr-2"
+              />
+              <h2 className="text-xl font-semibold text-secondary-700">Cart</h2>
+            </div>
             {cart.length > 0 && (
               <button
                 onClick={clearCart}

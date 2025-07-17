@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Coffee, Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X } from 'lucide-react';
+import { Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X } from 'lucide-react';
 import axios from 'axios';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
@@ -9,7 +9,7 @@ import InvoiceHistory from './components/InvoiceHistory';
 import TaxSettings from './components/TaxSettings';
 
 // Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'http://localhost:5000/api';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('order');
@@ -23,7 +23,7 @@ function App() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await axios.get('/api/menu');
+      const response = await axios.get('/menu');
       setMenuItems(response.data);
     } catch (error) {
       console.error('Error fetching menu items:', error);
@@ -113,7 +113,11 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Coffee className="h-8 w-8 text-secondary-500 mr-3" />
+              <img 
+                src="/images/palm-cafe-logo.png" 
+                alt="Palm Cafe Logo" 
+                className="h-10 w-10 mr-3"
+              />
               <h1 className="text-xl sm:text-2xl font-bold text-secondary-700">Palm Cafe</h1>
             </div>
             
