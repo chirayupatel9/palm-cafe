@@ -134,13 +134,13 @@ const CategoryManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-secondary-700">Category Management</h2>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Category Management</h2>
         <button
           onClick={() => setShowAddForm(true)}
-          className="btn-primary flex items-center"
+          className="btn-primary flex items-center justify-center text-sm"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add New Category
@@ -151,7 +151,7 @@ const CategoryManagement = () => {
       {showAddForm && (
         <div className="card">
           <h3 className="text-lg font-semibold text-secondary-700 mb-4">Add New Category</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input
               type="text"
               placeholder="Category Name *"
@@ -175,12 +175,12 @@ const CategoryManagement = () => {
               className="input-field"
             />
           </div>
-          <div className="flex justify-end space-x-3 mt-4">
-            <button onClick={handleCancel} className="btn-secondary flex items-center">
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-4">
+            <button onClick={handleCancel} className="btn-secondary flex items-center justify-center">
               <X className="h-4 w-4 mr-2" />
               Cancel
             </button>
-            <button onClick={handleSave} className="btn-primary flex items-center">
+            <button onClick={handleSave} className="btn-primary flex items-center justify-center">
               <Save className="h-4 w-4 mr-2" />
               Save
             </button>
@@ -198,119 +198,204 @@ const CategoryManagement = () => {
             <p className="text-sm">Add your first category to get started</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-accent-200">
-              <thead className="bg-accent-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
-                    Items
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
-                    Sort Order
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-secondary-600 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-accent-200">
-                {categories.map((category) => (
-                  <tr key={category.id} className="hover:bg-accent-50">
-                    {editingId === category.id ? (
-                      // Edit Mode
-                      <>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={formData.name}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                            className="input-field"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={formData.description}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="input-field"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-500">{category.item_count} items</span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="number"
-                            min="0"
-                            value={formData.sort_order}
-                            onChange={(e) => handleInputChange('sort_order', e.target.value)}
-                            className="input-field"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end space-x-2">
-                            <button onClick={handleSave} className="text-green-600 hover:text-green-900">
-                              <Save className="h-4 w-4" />
-                            </button>
-                            <button onClick={handleCancel} className="text-gray-600 hover:text-gray-900">
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    ) : (
-                      // View Mode
-                      <>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <FolderOpen className="h-5 w-5 text-secondary-500 mr-3" />
-                            <div className="text-sm font-medium text-secondary-700">{category.name}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">{category.description}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            category.item_count > 0 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-accent-100 text-accent-800'
-                          }`}>
-                            {category.item_count} items
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{category.sort_order}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => handleEdit(category)}
-                              className="text-blue-600 hover:text-blue-900"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(category.id, category.name, category.item_count)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    )}
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-accent-200">
+                <thead className="bg-accent-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
+                      Description
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
+                      Items
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-secondary-600 uppercase tracking-wider">
+                      Sort Order
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-secondary-600 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-accent-200">
+                  {categories.map((category) => (
+                    <tr key={category.id} className="hover:bg-accent-50">
+                      {editingId === category.id ? (
+                        // Edit Mode
+                        <>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={formData.name}
+                              onChange={(e) => handleInputChange('name', e.target.value)}
+                              className="input-field"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={formData.description}
+                              onChange={(e) => handleInputChange('description', e.target.value)}
+                              className="input-field"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-gray-500">{category.item_count} items</span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="number"
+                              min="0"
+                              value={formData.sort_order}
+                              onChange={(e) => handleInputChange('sort_order', e.target.value)}
+                              className="input-field"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
+                              <button onClick={handleSave} className="text-green-600 hover:text-green-900">
+                                <Save className="h-4 w-4" />
+                              </button>
+                              <button onClick={handleCancel} className="text-gray-600 hover:text-gray-900">
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        // View Mode
+                        <>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <FolderOpen className="h-5 w-5 text-secondary-500 mr-3" />
+                              <div className="text-sm font-medium text-secondary-700">{category.name}</div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-600">{category.description}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              category.item_count > 0 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-accent-100 text-accent-800'
+                            }`}>
+                              {category.item_count} items
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">{category.sort_order}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
+                              <button
+                                onClick={() => handleEdit(category)}
+                                className="text-blue-600 hover:text-blue-900"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(category.id, category.name, category.item_count)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-3">
+              {categories.map((category) => (
+                <div key={category.id} className="border border-accent-200 rounded-lg p-4 bg-white">
+                  {editingId === category.id ? (
+                    // Edit Mode Mobile
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Category Name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        className="input-field"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Description"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        className="input-field"
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Sort Order"
+                        value={formData.sort_order}
+                        onChange={(e) => handleInputChange('sort_order', e.target.value)}
+                        className="input-field"
+                      />
+                      <div className="flex space-x-2">
+                        <button onClick={handleSave} className="flex-1 btn-primary flex items-center justify-center">
+                          <Save className="h-4 w-4 mr-2" />
+                          Save
+                        </button>
+                        <button onClick={handleCancel} className="flex-1 btn-secondary flex items-center justify-center">
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View Mode Mobile
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center">
+                          <FolderOpen className="h-5 w-5 text-secondary-500 mr-3" />
+                          <div>
+                            <h4 className="font-medium text-secondary-700">{category.name}</h4>
+                            <p className="text-sm text-gray-600">{category.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(category)}
+                            className="p-2 text-blue-600 hover:text-blue-900 bg-blue-50 rounded-full"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(category.id, category.name, category.item_count)}
+                            className="p-2 text-red-600 hover:text-red-900 bg-red-50 rounded-full"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          category.item_count > 0 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-accent-100 text-accent-800'
+                        }`}>
+                          {category.item_count} items
+                        </span>
+                        <span className="text-gray-500">Sort: {category.sort_order}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -206,12 +206,12 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
   }, {});
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-secondary-700">Menu Management</h2>
-        <div className="flex space-x-3">
-          <label className="btn-secondary flex items-center cursor-pointer">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Menu Management</h2>
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+          <label className="btn-secondary flex items-center justify-center cursor-pointer text-sm">
             <Upload className="h-4 w-4 mr-2" />
             Import Excel
             <input
@@ -225,14 +225,14 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
           <button
             onClick={handleExport}
             disabled={loading}
-            className="btn-secondary flex items-center"
+            className="btn-secondary flex items-center justify-center text-sm"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Excel
           </button>
           <button
             onClick={() => setShowAddForm(true)}
-            className="btn-primary flex items-center"
+            className="btn-primary flex items-center justify-center text-sm"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add New Item
@@ -242,12 +242,12 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
 
       {/* Category Filter */}
       <div className="card">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <label className="text-sm font-medium text-secondary-700">Filter by Category:</label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="input-field max-w-xs"
+            className="input-field sm:max-w-xs"
           >
             <option value="all">All Categories</option>
             {categories.map(category => (
@@ -263,7 +263,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {showAddForm && (
         <div className="card">
           <h3 className="text-lg font-semibold text-secondary-700 mb-4">Add New Menu Item</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <select
               value={formData.category_id}
               onChange={(e) => handleInputChange('category_id', e.target.value)}
@@ -309,12 +309,12 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
               className="input-field"
             />
           </div>
-          <div className="flex justify-end space-x-3 mt-4">
-            <button onClick={handleCancel} className="btn-secondary flex items-center">
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-4">
+            <button onClick={handleCancel} className="btn-secondary flex items-center justify-center">
               <X className="h-4 w-4 mr-2" />
               Cancel
             </button>
-            <button onClick={handleSave} className="btn-primary flex items-center">
+            <button onClick={handleSave} className="btn-primary flex items-center justify-center">
               <Save className="h-4 w-4 mr-2" />
               Save
             </button>
@@ -338,7 +338,9 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
               <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
               {categoryName} ({items.length} items)
             </h3>
-            <div className="overflow-x-auto">
+            
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="min-w-full divide-y divide-accent-200">
                 <thead className="bg-accent-50">
                   <tr>
@@ -463,6 +465,101 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-3">
+              {items.map((item) => (
+                <div key={item.id} className="border border-accent-200 rounded-lg p-4 bg-white">
+                  {editingId === item.id ? (
+                    // Edit Mode Mobile
+                    <div className="space-y-3">
+                      <select
+                        value={formData.category_id}
+                        onChange={(e) => handleInputChange('category_id', e.target.value)}
+                        className="input-field"
+                      >
+                        {categories.map(category => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Item Name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        className="input-field"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Description"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        className="input-field"
+                      />
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="Price"
+                          value={formData.price}
+                          onChange={(e) => handleInputChange('price', e.target.value)}
+                          className="input-field"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Sort Order"
+                          value={formData.sort_order}
+                          onChange={(e) => handleInputChange('sort_order', e.target.value)}
+                          className="input-field"
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <button onClick={handleSave} className="flex-1 btn-primary flex items-center justify-center">
+                          <Save className="h-4 w-4 mr-2" />
+                          Save
+                        </button>
+                        <button onClick={handleCancel} className="flex-1 btn-secondary flex items-center justify-center">
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View Mode Mobile
+                    <div>
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium text-secondary-700">{item.name}</h4>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="p-2 text-blue-600 hover:text-blue-900 bg-blue-50 rounded-full"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id, item.name)}
+                            className="p-2 text-red-600 hover:text-red-900 bg-red-50 rounded-full"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="font-semibold text-secondary-600">
+                          ${ensureNumber(item.price).toFixed(2)}
+                        </span>
+                        <span className="text-gray-500">Sort: {item.sort_order || 0}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         ))

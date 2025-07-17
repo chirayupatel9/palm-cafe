@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Coffee, Receipt, Settings, Plus, Calculator, FolderOpen } from 'lucide-react';
+import { Coffee, Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X } from 'lucide-react';
 import axios from 'axios';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
@@ -15,6 +15,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('order');
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
@@ -58,6 +59,11 @@ function App() {
     }
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setMobileMenuOpen(false); // Close mobile menu when page changes
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'order':
@@ -82,6 +88,14 @@ function App() {
     }
   };
 
+  const navigationItems = [
+    { id: 'order', label: 'New Order', icon: Plus },
+    { id: 'categories', label: 'Categories', icon: FolderOpen },
+    { id: 'menu', label: 'Menu Management', icon: Settings },
+    { id: 'history', label: 'Invoice History', icon: Receipt },
+    { id: 'tax', label: 'Tax Settings', icon: Calculator },
+  ];
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-accent-50">
@@ -100,77 +114,76 @@ function App() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Coffee className="h-8 w-8 text-secondary-500 mr-3" />
-              <h1 className="text-2xl font-bold text-secondary-700">Palm Cafe</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-secondary-700">Palm Cafe</h1>
             </div>
+            
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-700 hover:bg-accent-100"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b border-accent-200">
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-white border-b border-accent-200 shadow-sm">
+          <div className="px-4 py-2 space-y-1">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handlePageChange(item.id)}
+                  className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
+                    currentPage === item.id
+                      ? 'bg-secondary-500 text-white'
+                      : 'text-secondary-600 hover:bg-accent-100'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 mr-3" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Navigation */}
+      <nav className="hidden lg:block bg-white shadow-sm border-b border-accent-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
-            <button
-              onClick={() => setCurrentPage('order')}
-              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
-                currentPage === 'order'
-                  ? 'nav-active'
-                  : 'nav-inactive'
-              }`}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              New Order
-            </button>
-            <button
-              onClick={() => setCurrentPage('categories')}
-              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
-                currentPage === 'categories'
-                  ? 'nav-active'
-                  : 'nav-inactive'
-              }`}
-            >
-              <FolderOpen className="h-4 w-4 mr-2" />
-              Categories
-            </button>
-            <button
-              onClick={() => setCurrentPage('menu')}
-              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
-                currentPage === 'menu'
-                  ? 'nav-active'
-                  : 'nav-inactive'
-              }`}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Menu Management
-            </button>
-            <button
-              onClick={() => setCurrentPage('history')}
-              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
-                currentPage === 'history'
-                  ? 'nav-active'
-                  : 'nav-inactive'
-              }`}
-            >
-              <Receipt className="h-4 w-4 mr-2" />
-              Invoice History
-            </button>
-            <button
-              onClick={() => setCurrentPage('tax')}
-              className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
-                currentPage === 'tax'
-                  ? 'nav-active'
-                  : 'nav-inactive'
-              }`}
-            >
-              <Calculator className="h-4 w-4 mr-2" />
-              Tax Settings
-            </button>
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handlePageChange(item.id)}
+                  className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ${
+                    currentPage === item.id
+                      ? 'nav-active'
+                      : 'nav-inactive'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         {renderPage()}
       </main>
     </div>

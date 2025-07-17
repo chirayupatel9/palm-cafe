@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen } from 'lucide-react';
+import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ const OrderPage = ({ menuItems }) => {
   const [tipPercentage, setTipPercentage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [groupedMenuItems, setGroupedMenuItems] = useState({});
+  const [showCart, setShowCart] = useState(false);
 
   const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -193,9 +194,9 @@ const OrderPage = ({ menuItems }) => {
   const total = getTotal();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="lg:grid lg:grid-cols-3 lg:gap-6">
       {/* Menu Items */}
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 mb-6 lg:mb-0">
         <div className="card">
           <h2 className="text-xl font-semibold text-secondary-700 mb-4">Menu Items</h2>
           
@@ -206,29 +207,29 @@ const OrderPage = ({ menuItems }) => {
               <p className="text-sm">Add items in Menu Management</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {Object.entries(groupedMenuItems).map(([categoryName, items]) => (
-                <div key={categoryName} className="border border-accent-200 rounded-lg p-4 bg-accent-50">
-                  <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
+                <div key={categoryName} className="border border-accent-200 rounded-lg p-3 sm:p-4 bg-accent-50">
+                  <h3 className="text-lg font-semibold text-secondary-700 mb-3 sm:mb-4 flex items-center">
                     <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
                     {categoryName}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="border border-accent-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+                        className="border border-accent-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
                         onClick={() => addToCart(item)}
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium text-secondary-700">{item.name}</h4>
-                          <span className="text-lg font-semibold text-secondary-600">
+                          <h4 className="font-medium text-secondary-700 text-sm sm:text-base">{item.name}</h4>
+                          <span className="text-base sm:text-lg font-semibold text-secondary-600">
                             ${ensureNumber(item.price).toFixed(2)}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 mb-3">{item.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-3">{item.description}</p>
                         <button
-                          className="btn-primary w-full flex items-center justify-center"
+                          className="btn-primary w-full flex items-center justify-center text-sm sm:text-base py-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             addToCart(item);
@@ -247,8 +248,184 @@ const OrderPage = ({ menuItems }) => {
         </div>
       </div>
 
-      {/* Cart */}
-      <div className="lg:col-span-1">
+      {/* Cart - Mobile Floating Button */}
+      <div className="lg:hidden fixed bottom-4 right-4 z-50">
+        <button
+          onClick={() => setShowCart(!showCart)}
+          className="bg-secondary-500 text-white p-4 rounded-full shadow-lg hover:bg-secondary-600 transition-colors"
+        >
+          <ShoppingCart className="h-6 w-6" />
+          {cart.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+              {cart.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Cart Overlay */}
+      {showCart && (
+        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40">
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-lg max-h-[80vh] overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-secondary-700 flex items-center">
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  Cart ({cart.length})
+                </h2>
+                <button
+                  onClick={() => setShowCart(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              {/* Customer Info */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Customer Name *"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="input-field mb-2"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone Number (optional)"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="input-field"
+                />
+              </div>
+
+              {/* Cart Items */}
+              {cart.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>Your cart is empty</p>
+                  <p className="text-sm">Add items from the menu</p>
+                </div>
+              ) : (
+                <div className="space-y-3 mb-4">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-secondary-700 text-sm">{item.name}</h4>
+                        <p className="text-xs text-gray-600">${ensureNumber(item.price).toFixed(2)} each</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-2 text-gray-500 hover:text-gray-700 bg-white rounded-full border"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-2 text-gray-500 hover:text-gray-700 bg-white rounded-full border"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-2 text-red-500 hover:text-red-700 bg-white rounded-full border"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Tip Selection */}
+              {cart.length > 0 && (
+                <div className="border-t border-accent-200 pt-4 mb-4">
+                  <h3 className="font-medium text-secondary-700 mb-3">Tip</h3>
+                  
+                  {/* Quick tip buttons */}
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {[0, 10, 15, 18, 20, 25].map((percentage) => (
+                      <button
+                        key={percentage}
+                        onClick={() => handleTipPercentageChange(percentage)}
+                        className={`py-2 px-3 text-sm rounded-lg border transition-colors ${
+                          tipPercentage === percentage
+                            ? 'bg-secondary-500 text-white border-secondary-500'
+                            : 'bg-white text-secondary-700 border-accent-300 hover:bg-accent-50'
+                        }`}
+                      >
+                        {percentage === 0 ? 'No Tip' : `${percentage}%`}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Custom tip amount */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">Custom:</span>
+                    <input
+                      type="number"
+                      value={tipAmount.toFixed(2)}
+                      onChange={(e) => handleTipAmountChange(e.target.value)}
+                      step="0.01"
+                      min="0"
+                      className="flex-1 px-3 py-2 border border-accent-300 rounded-lg text-sm focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Totals */}
+              {cart.length > 0 && (
+                <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Subtotal:</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  
+                  {taxInfo.taxAmount > 0 && (
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
+                      <span>${taxInfo.taxAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  {tipAmount > 0 && (
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Tip:</span>
+                      <span>${tipAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
+                    <span>Total:</span>
+                    <span className="text-secondary-600">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Generate Invoice Button */}
+              <button
+                onClick={() => {
+                  generateInvoice();
+                  setShowCart(false);
+                }}
+                disabled={cart.length === 0 || loading}
+                className="btn-primary w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed py-3"
+              >
+                <Receipt className="h-4 w-4 mr-2" />
+                {loading ? 'Generating...' : 'Generate & Open Invoice'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Cart */}
+      <div className="hidden lg:block lg:col-span-1">
         <div className="card sticky top-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-secondary-700 flex items-center">
