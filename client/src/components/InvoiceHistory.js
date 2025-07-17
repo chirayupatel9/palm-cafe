@@ -15,7 +15,7 @@ const InvoiceHistory = () => {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axios.get('/api/invoices');
+      const response = await axios.get('/invoices');
       setInvoices(response.data);
     } catch (error) {
       console.error('Error fetching invoices:', error);
@@ -27,7 +27,7 @@ const InvoiceHistory = () => {
 
   const fetchStatistics = async () => {
     try {
-      const response = await axios.get('/api/statistics');
+      const response = await axios.get('/statistics');
       setStatistics(response.data);
     } catch (error) {
       console.error('Error fetching statistics:', error);
@@ -36,7 +36,7 @@ const InvoiceHistory = () => {
 
   const openInvoice = async (invoiceNumber) => {
     try {
-      const response = await axios.get(`/api/invoices/${invoiceNumber}/download`);
+      const response = await axios.get(`/invoices/${invoiceNumber}/download`);
       
       // Create blob and open PDF in new tab
       const pdfBlob = new Blob([Uint8Array.from(atob(response.data.pdf), c => c.charCodeAt(0))], {

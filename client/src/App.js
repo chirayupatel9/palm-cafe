@@ -34,7 +34,7 @@ function App() {
 
   const updateMenuItem = async (id, updatedItem) => {
     try {
-      await axios.put(`/api/menu/${id}`, updatedItem);
+      await axios.put(`/menu/${id}`, updatedItem);
       fetchMenuItems();
     } catch (error) {
       console.error('Error updating menu item:', error);
@@ -43,7 +43,7 @@ function App() {
 
   const addMenuItem = async (newItem) => {
     try {
-      await axios.post('/api/menu', newItem);
+      await axios.post('/menu', newItem);
       fetchMenuItems();
     } catch (error) {
       console.error('Error adding menu item:', error);
@@ -52,7 +52,7 @@ function App() {
 
   const deleteMenuItem = async (id) => {
     try {
-      await axios.delete(`/api/menu/${id}`);
+      await axios.delete(`/menu/${id}`);
       fetchMenuItems();
     } catch (error) {
       console.error('Error deleting menu item:', error);
