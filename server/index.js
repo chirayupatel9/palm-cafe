@@ -13,6 +13,7 @@ const CurrencySettings = require('./models/currencySettings');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0'; // Allow network access
 
 // Configure multer for file uploads
 const upload = multer({
@@ -38,18 +39,55 @@ app.use(express.json());
 
 // Generate PDF invoice
 const generatePDF = async (invoice) => {
-  // Get current currency settings
-  let currencySymbol = '$'; // Default fallback
+  // Get current currency settings with better error handling
+  let currencySymbol = '₹'; // Default to INR symbol
   try {
     const currencySettings = await CurrencySettings.getCurrent();
-    currencySymbol = currencySettings.currency_symbol || '$';
+    console.log('Currency settings for PDF:', JSON.stringify(currencySettings, null, 2));
+    
+    if (currencySettings && currencySettings.currency_symbol) {
+      const symbol = String(currencySettings.currency_symbol).trim();
+      if (symbol && symbol.length > 0) {
+        currencySymbol = symbol;
+      }
+    }
+    
+    console.log('Final currency symbol being used:', currencySymbol);
   } catch (error) {
     console.error('Error fetching currency settings for PDF:', error);
-    // Use default $ if currency settings fail
+    console.log('Using fallback currency symbol:', currencySymbol);
   }
 
+  // Helper function to format currency with symbol
+  const formatCurrency = (amount) => {
+    const num = parseFloat(amount || 0).toFixed(2);
+    
+    // Map Unicode symbols to ASCII equivalents for PDF compatibility
+    let symbol = currencySymbol;
+    if (currencySymbol === '₹') {
+      symbol = 'Rs.';
+    } else if (currencySymbol === '€') {
+      symbol = 'EUR';
+    } else if (currencySymbol === '£') {
+      symbol = 'GBP';
+    } else if (currencySymbol === '¥') {
+      symbol = 'JPY';
+    }
+    
+    const formatted = `${symbol}${num}`;
+    console.log(`Formatting currency: ${amount} -> ${formatted} (original symbol: ${currencySymbol}, used symbol: ${symbol})`);
+    return formatted;
+  };
+
   return new Promise((resolve) => {
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ 
+      margin: 20, // Reduced margins
+      size: 'A4',
+      autoFirstPage: true
+    });
+    
+    // Set default font that supports Unicode
+    doc.font('Helvetica');
     const chunks = [];
 
     doc.on('data', chunk => chunks.push(chunk));
@@ -58,166 +96,129 @@ const generatePDF = async (invoice) => {
       resolve(result.toString('base64'));
     });
 
-    // Add the actual Palm Cafe logo
-    const logoX = 50;
-    const logoY = 50;
-    const logoSize = 40;
+    // Calculate page dimensions
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    const margin = 40; // Reduced margins
+    const contentWidth = pageWidth - (margin * 2);
+
+    // Header background - more readable
+    doc.rect(0, 0, pageWidth, 70).fill('#f4e1ba'); // Increased height for better spacing
     
+    // Logo in header
     try {
-      // Add the PNG logo to the PDF
-      doc.image('./public/images/palm-cafe-logo.png', logoX, logoY, { width: logoSize, height: logoSize });
+      doc.image('./public/images/palm-cafe-logo.png', pageWidth / 2 - 15, 15, { width: 30, height: 30 }); // Larger logo
     } catch (error) {
       console.error('Error adding logo to PDF:', error);
-      // Fallback to drawn logo if image fails to load
-      doc.save();
-      doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
-      doc.fill('#153059');
-      doc.restore();
-      
-      doc.save();
-      doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2);
-      doc.strokeColor('#f4e1ba');
-      doc.lineWidth(1);
-      doc.stroke();
-      doc.restore();
-      
-      doc.save();
-      doc.rect(logoX + 15, logoY + 25, 10, 15);
-      doc.fill('#f4e1ba');
-      doc.restore();
-      
-      doc.save();
-      doc.moveTo(logoX + 20, logoY + 25);
-      doc.lineTo(logoX + 10, logoY + 15);
-      doc.lineTo(logoX + 30, logoY + 15);
-      doc.closePath();
-      doc.fill('#f4e1ba');
-      doc.restore();
-      
-      doc.save();
-      doc.fontSize(8).font('Helvetica-Bold').fill('#f4e1ba');
-      doc.text('THE PALM', logoX + logoSize/2, logoY + logoSize + 5, { align: 'center' });
-      doc.fontSize(6).font('Helvetica');
-      doc.text('CAFE', logoX + logoSize/2, logoY + logoSize + 15, { align: 'center' });
-      doc.restore();
+      // Fallback to drawn logo
+      doc.circle(pageWidth / 2, 30, 15).fill('#153059'); // Larger circle
+      doc.circle(pageWidth / 2, 30, 15).stroke('#f4e1ba').lineWidth(2);
+      doc.fontSize(6).font('Helvetica-Bold').fill('#f4e1ba').text('PALM', pageWidth / 2, 25, { align: 'center' });
+      doc.fontSize(5).font('Helvetica').text('CAFE', pageWidth / 2, 35, { align: 'center' });
     }
 
-    // Header with logo
-    doc.fontSize(24).font('Helvetica-Bold').fill('#153059').text('PALM CAFE', { align: 'center' });
-    doc.moveDown(0.5);
-    doc.fontSize(14).font('Helvetica').fill('#75826b').text('INVOICE', { align: 'center' });
-    doc.moveDown();
-
-    // Invoice details
-    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text(`Invoice #: ${invoice.invoice_number || invoice.invoiceNumber}`);
-    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Date: ${new Date(invoice.date).toLocaleDateString()}`);
-    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Time: ${new Date(invoice.date).toLocaleTimeString()}`);
-    doc.moveDown();
-
-    // Customer info
-    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text('Customer Information:');
-    doc.fontSize(10).font('Helvetica').fill('#153059').text(`Name: ${invoice.customerName || invoice.customer_name || ''}`);
+    // Business name
+    doc.fontSize(18).font('Helvetica-Bold').fill('#153059').text('PALM CAFE', 0, 50, { align: 'center', width: pageWidth }); // Larger font
+    
+    // Invoice title
+    doc.fontSize(14).font('Helvetica-Bold').fill('#75826b').text('INVOICE', 0, 85, { align: 'center', width: pageWidth }); // Larger font
+    
+    // Invoice and customer info - better spacing
+    let currentY = 110; // Better spacing from header
+    
+    // Left column - Invoice details
+    doc.fontSize(11).font('Helvetica-Bold').fill('#153059').text('Invoice #:', margin, currentY);
+    doc.fontSize(11).font('Helvetica').text(invoice.invoice_number || invoice.invoiceNumber || 'N/A', margin + 70, currentY);
+    
+    doc.fontSize(9).font('Helvetica').text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, margin, currentY + 15);
+    doc.fontSize(9).font('Helvetica').text(`Time: ${new Date(invoice.date).toLocaleTimeString()}`, margin, currentY + 25);
+    
+    // Right column - Customer details
+    doc.fontSize(11).font('Helvetica-Bold').fill('#153059').text('Customer:', margin + 300, currentY);
+    doc.fontSize(11).font('Helvetica').text(invoice.customerName || invoice.customer_name || 'Walk-in Customer', margin + 370, currentY);
+    
     if (invoice.customerPhone || invoice.customer_phone) {
-      doc.fontSize(10).font('Helvetica').fill('#153059').text(`Phone: ${invoice.customerPhone || invoice.customer_phone}`);
+      doc.fontSize(9).font('Helvetica').text(`Phone: ${invoice.customerPhone || invoice.customer_phone}`, margin + 300, currentY + 15);
     }
-    doc.moveDown();
 
     // Items table
-    doc.fontSize(12).font('Helvetica-Bold').fill('#153059').text('Items:');
-    doc.moveDown(0.5);
-
-    // Table header
-    const tableTop = doc.y;
-    doc.fontSize(10).font('Helvetica-Bold').fill('#75826b');
-    doc.text('Item', 50, tableTop);
-    doc.text('Qty', 250, tableTop);
-    doc.text('Price', 300, tableTop);
-    doc.text('Total', 380, tableTop);
-
-    // Table content
-    let yPosition = tableTop + 20;
-    doc.fontSize(10).font('Helvetica').fill('#153059');
+    currentY += 40; // Better spacing
     
-    (invoice.items || []).forEach((item, index) => {
-      if (yPosition > 700) {
+    // Table header - more readable
+    doc.roundedRect(margin, currentY, contentWidth, 20, 5).fill('#f4e1ba'); // Larger height
+    doc.fontSize(10).font('Helvetica-Bold').fill('#153059'); // Larger font
+    doc.text('Item', margin + 10, currentY + 6, { width: 200 }); // Better Y position
+    doc.text('Qty', margin + 220, currentY + 6, { width: 60, align: 'right' });
+    doc.text('Price', margin + 290, currentY + 6, { width: 80, align: 'right' });
+    doc.text('Total', margin + 380, currentY + 6, { width: 80, align: 'right' });
+
+    // Table rows - more readable
+    currentY += 20; // Better spacing
+    (invoice.items || []).forEach((item, idx) => {
+      // Check if we need a new page - more conservative check
+      if (currentY > pageHeight - 120) {
         doc.addPage();
-        yPosition = 50;
+        currentY = margin + 50;
       }
-      doc.text(item.name || item.item_name, 50, yPosition);
-      doc.text(item.quantity.toString(), 250, yPosition);
-      doc.text(`${String(currencySymbol)}${parseFloat(item.price).toFixed(2)}`, 300, yPosition);
-      doc.text(`${String(currencySymbol)}${parseFloat(item.total).toFixed(2)}`, 380, yPosition);
-      yPosition += 20;
+      
+      // Zebra striping
+      const rowColor = idx % 2 === 0 ? '#f8f8f8' : '#ffffff';
+      doc.rect(margin, currentY, contentWidth, 16).fill(rowColor); // Larger row height
+      
+      doc.fontSize(9).font('Helvetica').fill('#153059'); // Larger font
+      doc.text(item.name || item.item_name || 'Unknown Item', margin + 10, currentY + 4, { width: 200 }); // Better Y position
+      doc.text(item.quantity.toString(), margin + 220, currentY + 4, { width: 60, align: 'right' });
+      doc.text(formatCurrency(item.price), margin + 290, currentY + 4, { width: 80, align: 'right' });
+      doc.text(formatCurrency(item.total), margin + 380, currentY + 4, { width: 80, align: 'right' });
+      
+      currentY += 16; // Better spacing
     });
 
-    // Totals section
-    doc.moveDown();
-    const totalsY = doc.y;
-    doc.fontSize(10).font('Helvetica').fill('#153059');
-    doc.text('Subtotal:', 300, totalsY);
-    doc.text(`${String(currencySymbol)}${parseFloat(invoice.subtotal).toFixed(2)}`, 380, totalsY);
+    // Totals section - more readable
+    currentY += 10; // Better spacing
     
-    if (parseFloat(invoice.tax_amount) > 0) {
-      doc.text('Tax:', 300, totalsY + 20);
-      doc.text(`${String(currencySymbol)}${parseFloat(invoice.tax_amount).toFixed(2)}`, 380, totalsY + 20);
+    // Check if we need a new page for totals - more conservative check
+    if (currentY > pageHeight - 100) {
+      doc.addPage();
+      currentY = margin + 50;
     }
     
-    if (parseFloat(invoice.tip_amount) > 0) {
-      doc.text('Tip:', 300, totalsY + 40);
-      doc.text(`${String(currencySymbol)}${parseFloat(invoice.tip_amount).toFixed(2)}`, 380, totalsY + 40);
+    doc.fontSize(11).font('Helvetica-Bold').fill('#75826b'); // Larger font
+    doc.text('Subtotal:', margin + 290, currentY, { width: 80, align: 'right' });
+    doc.text(formatCurrency(invoice.subtotal), margin + 380, currentY, { width: 80, align: 'right' });
+    currentY += 15; // Better spacing
+    
+    if (parseFloat(invoice.tax_amount || 0) > 0) {
+      doc.text('Tax:', margin + 290, currentY, { width: 80, align: 'right' });
+      doc.text(formatCurrency(invoice.tax_amount), margin + 380, currentY, { width: 80, align: 'right' });
+      currentY += 15; // Better spacing
     }
     
-    doc.fontSize(12).font('Helvetica-Bold').fill('#75826b');
-    doc.text('Total:', 300, totalsY + 60);
-    doc.text(`${String(currencySymbol)}${parseFloat(invoice.total).toFixed(2)}`, 380, totalsY + 60);
+    if (parseFloat(invoice.tip_amount || 0) > 0) {
+      doc.text('Tip:', margin + 290, currentY, { width: 80, align: 'right' });
+      doc.text(formatCurrency(invoice.tip_amount), margin + 380, currentY, { width: 80, align: 'right' });
+      currentY += 15; // Better spacing
+    }
     
-    // Footer with logo
-    doc.moveDown(2);
-    
-    // Footer logo (smaller version)
-    const footerLogoX = 50;
-    const footerLogoY = doc.y;
-    const footerLogoSize = 20;
+    // Total row with accent background - properly aligned
+    doc.roundedRect(margin + 280, currentY, 180, 20, 5).fill('#75826b'); // Larger height
+    doc.fontSize(12).font('Helvetica-Bold').fill('#ffffff'); // Larger font
+    doc.text('Total:', margin + 290, currentY + 5, { width: 80, align: 'right' }); // Better Y position
+    doc.text(formatCurrency(invoice.total), margin + 380, currentY + 5, { width: 80, align: 'right' }); // Better Y position
+
+    // Footer - properly positioned to prevent overflow
+    const footerY = pageHeight - 60; // Larger footer height for better positioning
+    doc.rect(0, footerY, pageWidth, 60).fill('#153059');
     
     try {
-      // Add the PNG logo to the footer
-      doc.image('./public/images/palm-cafe-logo.png', footerLogoX, footerLogoY, { width: footerLogoSize, height: footerLogoSize });
+      doc.image('./public/images/palm-cafe-logo.png', margin, footerY + 5, { width: 15, height: 15 }); // Larger logo
     } catch (error) {
-      console.error('Error adding footer logo to PDF:', error);
-      // Fallback to drawn logo if image fails to load
-      doc.save();
-      doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
-      doc.fill('#153059');
-      doc.restore();
-      
-      doc.save();
-      doc.circle(footerLogoX + footerLogoSize/2, footerLogoY + footerLogoSize/2, footerLogoSize/2);
-      doc.strokeColor('#f4e1ba');
-      doc.lineWidth(0.5);
-      doc.stroke();
-      doc.restore();
-      
-      doc.save();
-      doc.rect(footerLogoX + 7, footerLogoY + 12, 6, 8);
-      doc.fill('#f4e1ba');
-      doc.restore();
-      
-      doc.save();
-      doc.moveTo(footerLogoX + 10, footerLogoY + 12);
-      doc.lineTo(footerLogoX + 5, footerLogoY + 7);
-      doc.lineTo(footerLogoX + 15, footerLogoY + 7);
-      doc.closePath();
-      doc.fill('#f4e1ba');
-      doc.restore();
+      // Fallback logo in footer
+      doc.circle(margin + 7, footerY + 12, 7).fill('#f4e1ba'); // Larger circle
     }
     
-    // Footer text
-    doc.save();
-    doc.fontSize(10).font('Helvetica').fill('#153059');
-    doc.text('Thank you for visiting Palm Cafe!', { align: 'center' });
-    doc.fontSize(8).font('Helvetica');
-    doc.text('Generated by Palm Cafe Management System', { align: 'center' });
-    doc.restore();
+    doc.fontSize(9).font('Helvetica-Bold').fill('#ffffff').text('Thank you for visiting Palm Cafe!', 0, footerY + 20, { align: 'center', width: pageWidth }); // Better positioned and larger font
+    // doc.fontSize(5).font('Helvetica').fill('#f4e1ba').text('Generated by Palm Cafe Management System', 0, footerY + 20, { align: 'center', width: pageWidth }); // Smaller font
 
     doc.end();
   });
@@ -797,9 +798,10 @@ const startServer = async () => {
     await initializeDatabase();
 
     // Start server
-    app.listen(PORT, () => {
-      console.log(`Palm Cafe server running on port ${PORT}`);
-      console.log(`API available at http://localhost:${PORT}/api`);
+    app.listen(PORT, HOST, () => {
+      console.log(`Palm Cafe server running on ${HOST}:${PORT}`);
+      console.log(`API available at http://${HOST}:${PORT}/api`);
+      console.log(`Local access: http://localhost:${PORT}/api`);
       console.log('Database connected and initialized successfully');
     });
   } catch (error) {

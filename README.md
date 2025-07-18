@@ -97,6 +97,8 @@ npm install
 ```
 
 ### 6. Start the Application
+
+#### Local Development
 ```bash
 # Start backend (from server directory)
 npm run dev
@@ -104,6 +106,25 @@ npm run dev
 # Start frontend (from client directory)
 npm start
 ```
+
+#### Network Access (Accessible from other devices)
+```bash
+# Option 1: Use the provided batch script (Windows)
+start-network.bat
+
+# Option 2: Manual startup
+# Terminal 1 - Backend (from server directory)
+npm start
+
+# Terminal 2 - Frontend (from client directory)
+npm run start:network
+```
+
+**Network Access Notes:**
+- Backend will be available at: `http://0.0.0.0:5000/api`
+- Frontend will be available at: `http://0.0.0.0:3000`
+- Other devices on your network can access the app using your computer's IP address
+- To find your IP address: `ipconfig` (Windows) or `ifconfig` (Mac/Linux)
 
 ## Usage Guide
 

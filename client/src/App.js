@@ -10,8 +10,9 @@ import InvoiceHistory from './components/InvoiceHistory';
 import TaxSettings from './components/TaxSettings';
 import CurrencySettings from './components/CurrencySettings';
 
-// Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5000/api';
+// Configure axios base URL - use environment variable or fallback to localhost
+const API_BASE_URL = 'http://192.168.1.21:5000' || 'http://100.84.167.120:5000';
+axios.defaults.baseURL = `${API_BASE_URL}/api`;
 
 function App() {
   const [currentPage, setCurrentPage] = useState('order');

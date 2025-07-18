@@ -2,9 +2,9 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || '172.18.103.11',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || '123456',
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
