@@ -3,12 +3,14 @@ import { Toaster } from 'react-hot-toast';
 import { Receipt, Settings, Plus, Calculator, FolderOpen, Menu, X, DollarSign } from 'lucide-react';
 import axios from 'axios';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { DarkModeProvider } from './contexts/DarkModeContext';
 import OrderPage from './components/OrderPage';
 import MenuManagement from './components/MenuManagement';
 import CategoryManagement from './components/CategoryManagement';
 import InvoiceHistory from './components/InvoiceHistory';
 import TaxSettings from './components/TaxSettings';
 import CurrencySettings from './components/CurrencySettings';
+import DarkModeToggle from './components/DarkModeToggle';
 
 // Configure axios base URL - use environment variable or fallback to localhost
 const API_BASE_URL = 'http://192.168.1.21:5000' || 'http://100.84.167.120:5000';
@@ -104,25 +106,26 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-accent-50">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-accent-50 dark:bg-gray-900">
         <img 
           src="/images/palm-cafe-logo.png" 
           alt="Palm Cafe Logo" 
           className="h-16 w-16 mb-4"
         />
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary-500"></div>
-        <p className="mt-4 text-secondary-600">Loading Palm Cafe...</p>
+        <p className="mt-4 text-secondary-600 dark:text-gray-400">Loading Palm Cafe...</p>
       </div>
     );
   }
 
   return (
-    <CurrencyProvider>
-      <div className="min-h-screen bg-accent-50">
+    <DarkModeProvider>
+      <CurrencyProvider>
+        <div className="min-h-screen bg-accent-50 dark:bg-gray-900">
         <Toaster position="top-right" />
       
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-accent-200">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-accent-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -131,27 +134,32 @@ function App() {
                 alt="Palm Cafe Logo" 
                 className="h-10 w-10 mr-3"
               />
-              <h1 className="text-xl sm:text-2xl font-bold text-secondary-700">Palm Cafe</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-gray-100">Palm Cafe</h1>
             </div>
             
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-700 hover:bg-accent-100"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
+            <div className="flex items-center space-x-2">
+              {/* Dark mode toggle */}
+              <DarkModeToggle />
+              
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-700 hover:bg-accent-100"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-accent-200 shadow-sm">
+        <div className="lg:hidden bg-white dark:bg-gray-800 border-b border-accent-200 dark:border-gray-700 shadow-sm">
           <div className="px-4 py-2 space-y-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
@@ -175,7 +183,7 @@ function App() {
       )}
 
       {/* Desktop Navigation */}
-      <nav className="hidden lg:block bg-white shadow-sm border-b border-accent-200">
+      <nav className="hidden lg:block bg-white dark:bg-gray-800 shadow-sm border-b border-accent-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             {navigationItems.map((item) => {
@@ -203,8 +211,9 @@ function App() {
       <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         {renderPage()}
       </main>
-    </div>
-    </CurrencyProvider>
+        </div>
+      </CurrencyProvider>
+    </DarkModeProvider>
   );
 }
 

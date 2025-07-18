@@ -3,6 +3,106 @@
 @tailwind utilities;
 
 /* Custom CSS for Palm Cafe */
+/* Dark mode styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark .card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .btn-primary {
+  @apply bg-secondary-600 hover:bg-secondary-700;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600;
+}
+
+.dark .input-field {
+  @apply bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400 focus:ring-secondary-500 focus:border-secondary-500;
+}
+
+.dark .nav-active {
+  @apply border-secondary-400 text-secondary-300;
+}
+
+.dark .nav-inactive {
+  @apply text-gray-300 hover:text-gray-100 hover:border-gray-600;
+}
+
+.dark .mobile-nav-active {
+  @apply bg-secondary-600 text-white;
+}
+
+.dark .mobile-nav-inactive {
+  @apply text-gray-300 hover:bg-gray-800;
+}
+
+.dark .mobile-action-btn-edit {
+  @apply text-blue-400 hover:text-blue-300 bg-blue-900;
+}
+
+.dark .mobile-action-btn-delete {
+  @apply text-red-400 hover:text-red-300 bg-red-900;
+}
+
+.dark .mobile-action-btn-download {
+  @apply text-secondary-400 hover:text-secondary-300 bg-secondary-900;
+}
+
+.dark .mobile-stat-value {
+  @apply text-gray-100;
+}
+
+.dark .mobile-stat-label {
+  @apply text-gray-400;
+}
+
+.dark table {
+  @apply bg-gray-800;
+}
+
+.dark thead {
+  @apply bg-gray-700;
+}
+
+.dark tbody {
+  @apply bg-gray-800 divide-gray-700;
+}
+
+.dark tr {
+  @apply hover:bg-gray-700;
+}
+
+.dark th {
+  @apply text-gray-300;
+}
+
+.dark td {
+  @apply text-gray-200;
+}
+
+.dark .mobile-table-card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .mobile-table-footer {
+  @apply border-gray-700;
+}
+
+.dark .mobile-cart-content {
+  @apply bg-gray-800;
+}
+
+.dark .mobile-fab {
+  @apply bg-secondary-600 hover:bg-secondary-700;
+}
 @layer components {
   /* Card component */
   .card {
