@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, FolderOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { getCategoryColorByIndex } from '../utils/categoryColors';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -219,8 +220,10 @@ const CategoryManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-accent-200">
-                  {categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-accent-50">
+                  {categories.map((category, index) => {
+                    const categoryColor = getCategoryColorByIndex(index);
+                    return (
+                    <tr key={category.id} className={`hover:${categoryColor.hover}`}>
                       {editingId === category.id ? (
                         // Edit Mode
                         <>
@@ -306,7 +309,8 @@ const CategoryManagement = () => {
                         </>
                       )}
                     </tr>
-                  ))}
+                  );
+                })}
                 </tbody>
               </table>
             </div>

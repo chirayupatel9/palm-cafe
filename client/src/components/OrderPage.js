@@ -3,6 +3,7 @@ import { Plus, Minus, Trash2, Receipt, ShoppingCart, FolderOpen, X } from 'lucid
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { getCategoryColor } from '../utils/categoryColors';
 
 const OrderPage = ({ menuItems }) => {
   const { formatCurrency } = useCurrency();
@@ -222,10 +223,12 @@ const OrderPage = ({ menuItems }) => {
             </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
-              {Object.entries(groupedMenuItems).map(([categoryName, items]) => (
-                <div key={categoryName} className="border border-accent-200 rounded-lg p-3 sm:p-4 bg-accent-50">
-                  <h3 className="text-lg font-semibold text-secondary-700 mb-3 sm:mb-4 flex items-center">
-                    <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
+              {Object.entries(groupedMenuItems).map(([categoryName, items], index) => {
+                const categoryColor = getCategoryColor(categoryName, index);
+                return (
+                <div key={categoryName} className={`border ${categoryColor.border} rounded-lg p-3 sm:p-4 ${categoryColor.bg}`}>
+                  <h3 className={`text-lg font-semibold ${categoryColor.text} mb-3 sm:mb-4 flex items-center`}>
+                    <FolderOpen className={`h-5 w-5 mr-2 ${categoryColor.text}`} />
                     {categoryName}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -256,7 +259,8 @@ const OrderPage = ({ menuItems }) => {
                     ))}
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           )}
         </div>

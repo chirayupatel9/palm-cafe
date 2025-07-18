@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Save, X, Download, Upload, FolderOpen } from 'lucid
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { getCategoryColor } from '../utils/categoryColors';
 
 const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
   const { formatCurrency } = useCurrency();
@@ -341,12 +342,14 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
           </div>
         </div>
       ) : (
-        Object.entries(groupedMenuItems).map(([categoryName, items]) => (
-          <div key={categoryName} className="card">
-            <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
-              <FolderOpen className="h-5 w-5 mr-2 text-secondary-500" />
-              {categoryName} ({items.length} items)
-            </h3>
+        Object.entries(groupedMenuItems).map(([categoryName, items], index) => {
+          const categoryColor = getCategoryColor(categoryName, index);
+          return (
+            <div key={categoryName} className="card">
+              <h3 className={`text-lg font-semibold ${categoryColor.text} mb-4 flex items-center`}>
+                <FolderOpen className={`h-5 w-5 mr-2 ${categoryColor.text}`} />
+                {categoryName} ({items.length} items)
+              </h3>
             
             {/* Desktop Table */}
             <div className="hidden lg:block overflow-x-auto">
@@ -571,8 +574,9 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
               ))}
             </div>
           </div>
-        ))
-      )}
+        );
+      })
+    )}
     </div>
   );
 };
