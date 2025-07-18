@@ -235,12 +235,12 @@ const OrderPage = ({ menuItems }) => {
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="border border-accent-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+                        className={`border ${categoryColor.border} rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer ${categoryColor.bg} hover:${categoryColor.hover}`}
                         onClick={() => addToCart(item)}
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium text-secondary-700 text-sm sm:text-base">{item.name}</h4>
-                          <span className="text-base sm:text-lg font-semibold text-secondary-600">
+                          <h4 className={`font-medium ${categoryColor.text} text-sm sm:text-base`}>{item.name}</h4>
+                          <span className={`text-base sm:text-lg font-semibold ${categoryColor.text}`}>
                             {formatCurrency(ensureNumber(item.price))}
                           </span>
                         </div>
