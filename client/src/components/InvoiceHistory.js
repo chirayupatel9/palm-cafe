@@ -93,8 +93,8 @@ const InvoiceHistory = () => {
             className="h-10 w-10 mr-3"
           />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Invoice History</h2>
-            <div className="text-sm text-gray-500">
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300">Invoice History</h2>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               Total Invoices: {invoices.length}
             </div>
           </div>
@@ -104,13 +104,13 @@ const InvoiceHistory = () => {
       {/* Invoices List */}
       <div className="card">
         {invoices.length === 0 ? (
-          <div className="text-center py-8 sm:py-12 text-gray-500">
+          <div className="text-center py-8 sm:py-12 text-gray-500 dark:text-gray-400">
             <img 
               src="/images/palm-cafe-logo.png" 
               alt="Palm Cafe Logo" 
               className="h-16 w-16 mx-auto mb-4 opacity-50"
             />
-            <h3 className="text-lg font-medium text-secondary-700 mb-2">No invoices yet</h3>
+            <h3 className="text-lg font-medium text-secondary-700 dark:text-secondary-300 mb-2">No invoices yet</h3>
             <p className="text-sm">Generate your first invoice to see it here</p>
           </div>
         ) : (
@@ -144,7 +144,7 @@ const InvoiceHistory = () => {
                   {invoices.map((invoice) => (
                     <tr key={invoice.invoiceNumber} className="hover:bg-accent-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-secondary-700">
+                        <div className="text-sm font-medium text-secondary-700 dark:text-secondary-300">
                           #{invoice.invoiceNumber}
                         </div>
                       </td>
@@ -152,11 +152,11 @@ const InvoiceHistory = () => {
                         <div className="flex items-center">
                           <User className="h-4 w-4 text-secondary-400 mr-2" />
                           <div>
-                            <div className="text-sm font-medium text-secondary-700">
+                            <div className="text-sm font-medium text-secondary-700 dark:text-secondary-300">
                               {invoice.customerName}
                             </div>
                             {invoice.customerPhone && (
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {invoice.customerPhone}
                               </div>
                             )}
@@ -166,16 +166,16 @@ const InvoiceHistory = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 text-secondary-400 mr-2" />
-                          <div className="text-sm text-secondary-700">
+                          <div className="text-sm text-secondary-700 dark:text-secondary-300">
                             {formatDate(invoice.date)}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-secondary-700">
+                        <div className="text-sm text-secondary-700 dark:text-secondary-300">
                           {invoice.items.length} item{invoice.items.length !== 1 ? 's' : ''}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {invoice.items.map(item => item.name).join(', ')}
                         </div>
                       </td>
@@ -187,7 +187,7 @@ const InvoiceHistory = () => {
                           </div>
                         </div>
                         {/* Show tax and tip breakdown */}
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {invoice.tax_amount > 0 && (
                             <div>Tax: ${invoice.tax_amount.toFixed(2)}</div>
                           )}
@@ -219,8 +219,8 @@ const InvoiceHistory = () => {
                     <div className="flex items-center">
                       <Calendar className="h-5 w-5 text-secondary-500 mr-2" />
                       <div>
-                        <h4 className="font-medium text-secondary-700">#{invoice.invoiceNumber}</h4>
-                        <p className="text-sm text-gray-600">{formatDate(invoice.date)}</p>
+                        <h4 className="font-medium text-secondary-700 dark:text-secondary-300">#{invoice.invoiceNumber}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(invoice.date)}</p>
                       </div>
                     </div>
                     <button
@@ -236,18 +236,18 @@ const InvoiceHistory = () => {
                     <div className="flex items-center">
                       <User className="h-4 w-4 text-secondary-400 mr-2" />
                       <div>
-                        <p className="text-sm font-medium text-secondary-700">{invoice.customerName}</p>
+                        <p className="text-sm font-medium text-secondary-700 dark:text-secondary-300">{invoice.customerName}</p>
                         {invoice.customerPhone && (
-                          <p className="text-xs text-gray-500">{invoice.customerPhone}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{invoice.customerPhone}</p>
                         )}
                       </div>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {invoice.items.length} item{invoice.items.length !== 1 ? 's' : ''}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {invoice.items.map(item => item.name).join(', ')}
                       </p>
                     </div>
@@ -259,7 +259,7 @@ const InvoiceHistory = () => {
                           ${invoice.total.toFixed(2)}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {invoice.tax_amount > 0 && (
                           <span className="mr-2">Tax: ${invoice.tax_amount.toFixed(2)}</span>
                         )}
@@ -285,8 +285,8 @@ const InvoiceHistory = () => {
                 <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-secondary-500" />
               </div>
               <div className="ml-3 sm:ml-4">
-                <div className="text-xs sm:text-sm font-medium text-gray-500">Total Revenue</div>
-                <div className="text-lg sm:text-2xl font-semibold text-secondary-700">
+                <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</div>
+                <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
                   ${statistics.totalRevenue.toFixed(2)}
                 </div>
               </div>
@@ -299,8 +299,8 @@ const InvoiceHistory = () => {
                 <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-secondary-500" />
               </div>
               <div className="ml-3 sm:ml-4">
-                <div className="text-xs sm:text-sm font-medium text-gray-500">Total Orders</div>
-                <div className="text-lg sm:text-2xl font-semibold text-secondary-700">
+                <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</div>
+                <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
                   {statistics.totalOrders}
                 </div>
               </div>
@@ -313,8 +313,8 @@ const InvoiceHistory = () => {
                 <User className="h-6 w-6 sm:h-8 sm:w-8 text-secondary-500" />
               </div>
               <div className="ml-3 sm:ml-4">
-                <div className="text-xs sm:text-sm font-medium text-gray-500">Unique Customers</div>
-                <div className="text-lg sm:text-2xl font-semibold text-secondary-700">
+                <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Unique Customers</div>
+                <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
                   {statistics.uniqueCustomers}
                 </div>
               </div>
@@ -327,8 +327,8 @@ const InvoiceHistory = () => {
                 <Percent className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
               </div>
               <div className="ml-3 sm:ml-4">
-                <div className="text-xs sm:text-sm font-medium text-gray-500">Total Tax Collected</div>
-                <div className="text-lg sm:text-2xl font-semibold text-secondary-700">
+                <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Tax Collected</div>
+                <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
                   ${statistics.totalTax.toFixed(2)}
                 </div>
               </div>
@@ -341,8 +341,8 @@ const InvoiceHistory = () => {
                 <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
               </div>
               <div className="ml-3 sm:ml-4">
-                <div className="text-xs sm:text-sm font-medium text-gray-500">Total Tips</div>
-                <div className="text-lg sm:text-2xl font-semibold text-secondary-700">
+                <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Tips</div>
+                <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
                   ${statistics.totalTips.toFixed(2)}
                 </div>
               </div>

@@ -212,8 +212,8 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
             className="h-10 w-10 mr-3"
           />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700">Menu Management</h2>
-            <p className="text-sm text-gray-600">Manage your cafe's menu items and categories</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300">Menu Management</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Manage your cafe's menu items and categories</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
@@ -249,7 +249,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {/* Category Filter */}
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-          <label className="text-sm font-medium text-secondary-700">Filter by Category:</label>
+          <label className="text-sm font-medium text-secondary-700 dark:text-secondary-300">Filter by Category:</label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -268,7 +268,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {/* Add New Item Form */}
       {showAddForm && (
         <div className="card">
-          <h3 className="text-lg font-semibold text-secondary-700 mb-4">Add New Menu Item</h3>
+          <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300 mb-4">Add New Menu Item</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <select
               value={formData.category_id}
@@ -331,7 +331,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
       {/* Menu Items by Category */}
       {Object.keys(groupedMenuItems).length === 0 ? (
         <div className="card">
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <img 
               src="/images/palm-cafe-logo.png" 
               alt="Palm Cafe Logo" 
@@ -432,7 +432,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                               <button onClick={handleSave} className="text-green-600 hover:text-green-900">
                                 <Save className="h-4 w-4" />
                               </button>
-                              <button onClick={handleCancel} className="text-gray-600 hover:text-gray-900">
+                              <button onClick={handleCancel} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
                                 <X className="h-4 w-4" />
                               </button>
                             </div>
@@ -442,10 +442,10 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                         // View Mode
                         <>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-secondary-700">{item.name}</div>
+                            <div className="text-sm font-medium text-secondary-700 dark:text-secondary-300">{item.name}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600">{item.description}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{item.description}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-semibold text-secondary-600">
@@ -453,7 +453,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{item.sort_order || 0}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{item.sort_order || 0}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex justify-end space-x-2">
@@ -545,7 +545,7 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                     // View Mode Mobile
                     <div>
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium text-secondary-700">{item.name}</h4>
+                        <h4 className="font-medium text-secondary-700 dark:text-secondary-300">{item.name}</h4>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(item)}
@@ -561,12 +561,12 @@ const MenuManagement = ({ menuItems, onUpdate, onAdd, onDelete }) => {
                           </button>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{item.description}</p>
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-semibold text-secondary-600">
                           {formatCurrency(ensureNumber(item.price))}
                         </span>
-                        <span className="text-gray-500">Sort: {item.sort_order || 0}</span>
+                        <span className="text-gray-500 dark:text-gray-400">Sort: {item.sort_order || 0}</span>
                       </div>
                     </div>
                   )}

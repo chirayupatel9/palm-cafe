@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Edit, Save, X, Calendar } from 'lucide-react';
+import { Calculator, Edit, Save, X, Calendar, Percent } from 'lucide-react';
 import axios from 'axios';
 
 const TaxSettings = () => {
@@ -121,11 +121,11 @@ const TaxSettings = () => {
             className="h-10 w-10 mr-3"
           />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 flex items-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300 flex items-center">
               <Calculator className="h-6 w-6 mr-2" />
               Tax Settings
             </h2>
-            <p className="text-sm text-gray-600">Manage tax rates and settings for your cafe</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Manage tax rates and settings for your cafe</p>
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ const TaxSettings = () => {
       {/* Current Settings */}
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
-          <h3 className="text-lg font-semibold text-secondary-700">Current Tax Settings</h3>
+          <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300">Current Tax Settings</h3>
           {!isEditing && (
             <button
               onClick={handleEdit}
@@ -154,7 +154,7 @@ const TaxSettings = () => {
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
+              <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                 Tax Name
               </label>
               <input
@@ -169,7 +169,7 @@ const TaxSettings = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
+              <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                 Tax Rate (%)
               </label>
               <input
@@ -207,15 +207,25 @@ const TaxSettings = () => {
           </form>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
-              <h4 className="text-sm font-medium text-secondary-600 mb-1">Tax Name</h4>
-              <p className="text-lg font-semibold text-secondary-700">
+            <div className="bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-900/30 dark:to-warm-800/20 p-6 rounded-xl border border-warm-200 dark:border-warm-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-secondary-100 dark:bg-secondary-800/50 rounded-lg mr-3">
+                  <Calculator className="h-5 w-5 text-secondary-600 dark:text-secondary-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-secondary-700 dark:text-secondary-300 uppercase tracking-wide">Tax Name</h4>
+              </div>
+              <p className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
                 {currentSettings?.tax_name || 'Not set'}
               </p>
             </div>
-            <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
-              <h4 className="text-sm font-medium text-secondary-600 mb-1">Tax Rate</h4>
-              <p className="text-lg font-semibold text-secondary-700">
+            <div className="bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-900/30 dark:to-warm-800/20 p-6 rounded-xl border border-warm-200 dark:border-warm-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-secondary-100 dark:bg-secondary-800/50 rounded-lg mr-3">
+                  <Percent className="h-5 w-5 text-secondary-600 dark:text-secondary-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-secondary-700 dark:text-secondary-300 uppercase tracking-wide">Tax Rate</h4>
+              </div>
+              <p className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
                 {currentSettings?.tax_rate ? `${currentSettings.tax_rate}%` : '0%'}
               </p>
             </div>
@@ -225,13 +235,13 @@ const TaxSettings = () => {
 
       {/* Tax History */}
       <div className="card">
-        <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
+        <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300 mb-4 flex items-center">
           <Calendar className="h-5 w-5 mr-2" />
           Tax History
         </h3>
         
         {history.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <img 
               src="/images/palm-cafe-logo.png" 
               alt="Palm Cafe Logo" 
@@ -263,20 +273,20 @@ const TaxSettings = () => {
                 <tbody className="bg-white divide-y divide-accent-200">
                   {history.map((setting) => (
                     <tr key={setting.id} className="hover:bg-accent-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
                         {new Date(setting.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
                         {setting.tax_name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
                         {setting.tax_rate}%
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           setting.is_active 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-accent-100 text-accent-800'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                            : 'bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300'
                         }`}>
                           {setting.is_active ? 'Active' : 'Inactive'}
                         </span>
@@ -290,13 +300,13 @@ const TaxSettings = () => {
             {/* Mobile Cards */}
             <div className="lg:hidden space-y-3">
               {history.map((setting) => (
-                <div key={setting.id} className="border border-accent-200 rounded-lg p-4 bg-white">
+                <div key={setting.id} className="border border-accent-200 dark:border-accent-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center">
                       <Calendar className="h-5 w-5 text-secondary-500 mr-2" />
                       <div>
-                        <h4 className="font-medium text-secondary-700">{setting.tax_name}</h4>
-                        <p className="text-sm text-gray-600">
+                        <h4 className="font-medium text-secondary-700 dark:text-secondary-300">{setting.tax_name}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           {new Date(setting.created_at).toLocaleDateString()}
                         </p>
                       </div>
@@ -310,9 +320,9 @@ const TaxSettings = () => {
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-secondary-600 font-medium">
-                      Tax Rate: {setting.tax_rate}%
-                    </span>
+                                            <span className="text-secondary-600 dark:text-secondary-400 font-medium">
+                          Tax Rate: {setting.tax_rate}%
+                        </span>
                   </div>
                 </div>
               ))}

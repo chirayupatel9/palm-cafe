@@ -21,7 +21,7 @@
 }
 
 .dark .btn-secondary {
-  @apply bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600;
+  @apply bg-warm-800 hover:bg-warm-700 text-warm-100 border-warm-600;
 }
 
 .dark .input-field {
@@ -106,7 +106,7 @@
 @layer components {
   /* Card component */
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-accent-200 p-4 sm:p-6;
+    @apply bg-white rounded-lg shadow-sm border border-warm-200 p-4 sm:p-6;
   }
 
   /* Button styles */
@@ -115,12 +115,12 @@
   }
 
   .btn-secondary {
-    @apply bg-accent-100 hover:bg-accent-200 text-secondary-700 px-4 py-2 rounded-lg transition-colors duration-200 font-medium border border-accent-300;
+    @apply bg-warm-100 hover:bg-warm-200 text-secondary-700 px-4 py-2 rounded-lg transition-colors duration-200 font-medium border border-warm-300;
   }
 
   /* Input field styles */
   .input-field {
-    @apply w-full px-3 py-2 border border-accent-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-colors duration-200;
+    @apply w-full px-3 py-2 border border-warm-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-colors duration-200;
   }
 
   /* Navigation styles */
@@ -129,7 +129,7 @@
   }
 
   .nav-inactive {
-    @apply border-transparent text-secondary-600 hover:text-secondary-700 hover:border-accent-300;
+    @apply border-transparent text-secondary-600 hover:text-secondary-700 hover:border-warm-300;
   }
 
   /* Mobile-specific styles */

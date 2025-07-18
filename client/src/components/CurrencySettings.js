@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Edit, Save, X, Calendar, Globe } from 'lucide-react';
+import { DollarSign, Edit, Save, X, Calendar, Globe, Flag } from 'lucide-react';
 import axios from 'axios';
 import { useCurrency } from '../contexts/CurrencyContext';
 
@@ -138,11 +138,11 @@ const CurrencySettings = () => {
             className="h-10 w-10 mr-3"
           />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 flex items-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300 flex items-center">
               <Globe className="h-6 w-6 mr-2" />
               Currency Settings
             </h2>
-            <p className="text-sm text-gray-600">Manage currency for your cafe</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Manage currency for your cafe</p>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ const CurrencySettings = () => {
       {/* Current Settings */}
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
-          <h3 className="text-lg font-semibold text-secondary-700">Current Currency Settings</h3>
+          <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300">Current Currency Settings</h3>
           {!isEditing && (
             <button
               onClick={handleEdit}
@@ -171,7 +171,7 @@ const CurrencySettings = () => {
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
+              <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                 Select Currency
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-4">
@@ -188,7 +188,7 @@ const CurrencySettings = () => {
                   >
                     <div className="text-lg mb-1">{currency.symbol}</div>
                     <div className="font-semibold">{currency.code}</div>
-                    <div className="text-xs text-gray-500">{currency.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{currency.name}</div>
                   </button>
                 ))}
               </div>
@@ -196,7 +196,7 @@ const CurrencySettings = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                   Currency Code
                 </label>
                 <input
@@ -264,21 +264,36 @@ const CurrencySettings = () => {
           </form>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
-              <h4 className="text-sm font-medium text-secondary-600 mb-1">Currency Code</h4>
-              <p className="text-lg font-semibold text-secondary-700">
+            <div className="bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-900/30 dark:to-warm-800/20 p-6 rounded-xl border border-warm-200 dark:border-warm-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-secondary-100 dark:bg-secondary-800/50 rounded-lg mr-3">
+                  <Globe className="h-5 w-5 text-secondary-600 dark:text-secondary-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-secondary-700 dark:text-secondary-300 uppercase tracking-wide">Currency Code</h4>
+              </div>
+              <p className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
                 {currentSettings?.currency_code || 'USD'}
               </p>
             </div>
-            <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
-              <h4 className="text-sm font-medium text-secondary-600 mb-1">Currency Symbol</h4>
-              <p className="text-lg font-semibold text-secondary-700">
+            <div className="bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-900/30 dark:to-warm-800/20 p-6 rounded-xl border border-warm-200 dark:border-warm-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-secondary-100 dark:bg-secondary-800/50 rounded-lg mr-3">
+                  <DollarSign className="h-5 w-5 text-secondary-600 dark:text-secondary-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-secondary-700 dark:text-secondary-300 uppercase tracking-wide">Currency Symbol</h4>
+              </div>
+              <p className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
                 {currentSettings?.currency_symbol || '$'}
               </p>
             </div>
-            <div className="bg-accent-50 p-4 rounded-lg border border-accent-200">
-              <h4 className="text-sm font-medium text-secondary-600 mb-1">Currency Name</h4>
-              <p className="text-lg font-semibold text-secondary-700">
+            <div className="bg-gradient-to-br from-warm-50 to-warm-100 dark:from-warm-900/30 dark:to-warm-800/20 p-6 rounded-xl border border-warm-200 dark:border-warm-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-secondary-100 dark:bg-secondary-800/50 rounded-lg mr-3">
+                  <Flag className="h-5 w-5 text-secondary-600 dark:text-secondary-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-secondary-700 dark:text-secondary-300 uppercase tracking-wide">Currency Name</h4>
+              </div>
+              <p className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
                 {currentSettings?.currency_name || 'US Dollar'}
               </p>
             </div>
@@ -288,13 +303,13 @@ const CurrencySettings = () => {
 
       {/* Currency History */}
       <div className="card">
-        <h3 className="text-lg font-semibold text-secondary-700 mb-4 flex items-center">
+        <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300 mb-4 flex items-center">
           <Calendar className="h-5 w-5 mr-2" />
           Currency History
         </h3>
         
         {history.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <img 
               src="/images/palm-cafe-logo.png" 
               alt="Palm Cafe Logo" 
@@ -344,8 +359,8 @@ const CurrencySettings = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           setting.is_active 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-accent-100 text-accent-800'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                            : 'bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300'
                         }`}>
                           {setting.is_active ? 'Active' : 'Inactive'}
                         </span>
@@ -359,7 +374,7 @@ const CurrencySettings = () => {
             {/* Mobile Cards */}
             <div className="lg:hidden space-y-3">
               {history.map((setting) => (
-                <div key={setting.id} className="border border-accent-200 rounded-lg p-4 bg-white">
+                <div key={setting.id} className="border border-accent-200 dark:border-accent-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center">
                       <Calendar className="h-5 w-5 text-secondary-500 mr-2" />
@@ -372,8 +387,8 @@ const CurrencySettings = () => {
                     </div>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       setting.is_active 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-accent-100 text-accent-800'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                        : 'bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300'
                     }`}>
                       {setting.is_active ? 'Active' : 'Inactive'}
                     </span>
