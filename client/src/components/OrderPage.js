@@ -206,13 +206,13 @@ const OrderPage = ({ menuItems }) => {
               className="h-16 w-16 mr-4"
             />
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-secondary-700">Menu Items</h2>
-              <p className="text-sm text-gray-600">Select items to add to your order</p>
+              <h2 className="text-2xl font-bold text-secondary-700 dark:text-secondary-300">Menu Items</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Select items to add to your order</p>
             </div>
           </div>
           
           {Object.keys(groupedMenuItems).length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <img 
                 src="/images/palm-cafe-logo.png" 
                 alt="Palm Cafe Logo" 
@@ -244,7 +244,7 @@ const OrderPage = ({ menuItems }) => {
                             {formatCurrency(ensureNumber(item.price))}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-600 mb-3">{item.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">{item.description}</p>
                         <button
                           className="btn-primary w-full flex items-center justify-center text-sm sm:text-base py-2"
                           onClick={(e) => {
@@ -367,7 +367,7 @@ const OrderPage = ({ menuItems }) => {
               {/* Tip Selection */}
               {cart.length > 0 && (
                 <div className="border-t border-accent-200 pt-4 mb-4">
-                  <h3 className="font-medium text-secondary-700 mb-3">Tip</h3>
+                  <h3 className="font-medium text-secondary-700 dark:text-secondary-300 mb-3">Tip</h3>
                   
                   {/* Quick tip buttons */}
                   <div className="grid grid-cols-3 gap-2 mb-3">
@@ -405,28 +405,28 @@ const OrderPage = ({ menuItems }) => {
               {/* Totals */}
               {cart.length > 0 && (
                 <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                     <span>Subtotal:</span>
                     <span>{formatCurrency(subtotal)}</span>
                   </div>
                   
                   {taxInfo.taxAmount > 0 && (
-                    <div className="flex justify-between text-sm text-gray-600">
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                       <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
                       <span>{formatCurrency(taxInfo.taxAmount)}</span>
                     </div>
                   )}
                   
                   {tipAmount > 0 && (
-                    <div className="flex justify-between text-sm text-gray-600">
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                       <span>Tip:</span>
                       <span>{formatCurrency(tipAmount)}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
-                    <span>Total:</span>
-                    <span className="text-secondary-600">{formatCurrency(total)}</span>
+                    <span className="text-secondary-700 dark:text-secondary-300">Total:</span>
+                    <span className="text-secondary-600 dark:text-secondary-400">{formatCurrency(total)}</span>
                   </div>
                 </div>
               )}
@@ -458,7 +458,7 @@ const OrderPage = ({ menuItems }) => {
                 alt="Palm Cafe Logo" 
                 className="h-8 w-8 mr-2"
               />
-              <h2 className="text-xl font-semibold text-secondary-700">Cart</h2>
+              <h2 className="text-xl font-semibold text-secondary-700 dark:text-secondary-300">Cart</h2>
             </div>
             {cart.length > 0 && (
               <button
@@ -490,8 +490,8 @@ const OrderPage = ({ menuItems }) => {
 
           {/* Cart Items */}
           {cart.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-gray-300 dark:text-gray-500" />
               <p>Your cart is empty</p>
               <p className="text-sm">Add items from the menu</p>
             </div>
@@ -500,8 +500,8 @@ const OrderPage = ({ menuItems }) => {
               {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
                   <div className="flex-1">
-                    <h4 className="font-medium text-secondary-700">{item.name}</h4>
-                                            <p className="text-sm text-gray-600">{formatCurrency(ensureNumber(item.price))} each</p>
+                    <h4 className="font-medium text-secondary-700 dark:text-secondary-300">{item.name}</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{formatCurrency(ensureNumber(item.price))} each</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
@@ -532,7 +532,7 @@ const OrderPage = ({ menuItems }) => {
           {/* Tip Selection */}
           {cart.length > 0 && (
             <div className="border-t border-accent-200 pt-4 mb-4">
-              <h3 className="font-medium text-secondary-700 mb-3">Tip</h3>
+              <h3 className="font-medium text-secondary-700 dark:text-secondary-300 mb-3">Tip</h3>
               
               {/* Quick tip buttons */}
               <div className="grid grid-cols-3 gap-2 mb-3">
@@ -570,28 +570,28 @@ const OrderPage = ({ menuItems }) => {
           {/* Totals */}
           {cart.length > 0 && (
             <div className="border-t border-accent-200 pt-4 mb-4 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>Subtotal:</span>
                                     <span>{formatCurrency(subtotal)}</span>
               </div>
               
               {taxInfo.taxAmount > 0 && (
-                <div className="flex justify-between text-sm text-gray-600">
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>{taxInfo.taxName} ({taxInfo.taxRate}%):</span>
                   <span>{formatCurrency(taxInfo.taxAmount)}</span>
                 </div>
               )}
               
               {tipAmount > 0 && (
-                <div className="flex justify-between text-sm text-gray-600">
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>Tip:</span>
                   <span>{formatCurrency(tipAmount)}</span>
                 </div>
               )}
               
               <div className="flex justify-between items-center text-lg font-semibold border-t border-accent-200 pt-2">
-                <span>Total:</span>
-                <span className="text-secondary-600">{formatCurrency(total)}</span>
+                <span className="text-secondary-700 dark:text-secondary-300">Total:</span>
+                <span className="text-secondary-600 dark:text-secondary-400">{formatCurrency(total)}</span>
               </div>
             </div>
           )}
