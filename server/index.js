@@ -105,20 +105,20 @@ const generatePDF = async (invoice) => {
     // Header background - more readable
     doc.rect(0, 0, pageWidth, 70).fill('#f4e1ba'); // Increased height for better spacing
     
-    // Logo in header
+    // Logo in header - left side, bigger
     try {
-      doc.image('./public/images/palm-cafe-logo.png', pageWidth / 2 - 15, 15, { width: 30, height: 30 }); // Larger logo
+      doc.image('./public/images/palm-cafe-logo.png', margin, 10, { width: 50, height: 50 }); // Much larger logo on left
     } catch (error) {
       console.error('Error adding logo to PDF:', error);
       // Fallback to drawn logo
-      doc.circle(pageWidth / 2, 30, 15).fill('#153059'); // Larger circle
-      doc.circle(pageWidth / 2, 30, 15).stroke('#f4e1ba').lineWidth(2);
-      doc.fontSize(6).font('Helvetica-Bold').fill('#f4e1ba').text('PALM', pageWidth / 2, 25, { align: 'center' });
-      doc.fontSize(5).font('Helvetica').text('CAFE', pageWidth / 2, 35, { align: 'center' });
+      doc.circle(margin + 25, 35, 25).fill('#153059'); // Larger circle on left
+      doc.circle(margin + 25, 35, 25).stroke('#f4e1ba').lineWidth(2);
+      doc.fontSize(8).font('Helvetica-Bold').fill('#f4e1ba').text('PALM', margin + 25, 30, { align: 'center' });
+      doc.fontSize(6).font('Helvetica').text('CAFE', margin + 25, 40, { align: 'center' });
     }
 
-    // Business name
-    doc.fontSize(18).font('Helvetica-Bold').fill('#153059').text('PALM CAFE', 0, 50, { align: 'center', width: pageWidth }); // Larger font
+    // Business name - right side
+    doc.fontSize(20).font('Helvetica-Bold').fill('#153059').text('PALM CAFE', margin + 380, 25, { width: 200 }); // Bold font on right side
     
     // Invoice title
     doc.fontSize(14).font('Helvetica-Bold').fill('#75826b').text('INVOICE', 0, 85, { align: 'center', width: pageWidth }); // Larger font
