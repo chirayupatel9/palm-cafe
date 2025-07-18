@@ -201,7 +201,8 @@ const generatePDF = async (invoice) => {
     }
     
     // Total row with accent background - properly aligned
-    doc.roundedRect(margin + 280, currentY, 180, 20, 5).fill('#75826b'); // Larger height
+    doc.roundedRect(margin, currentY, contentWidth, 20, 5).fill('#75826b');
+    // doc.roundedRect(margin + 280, currentY, 180, 20, 5).fill('#75826b'); // Larger height
     doc.fontSize(12).font('Helvetica-Bold').fill('#ffffff'); // Larger font
     doc.text('Total:', margin + 290, currentY + 5, { width: 80, align: 'right' }); // Better Y position
     doc.text(formatCurrency(invoice.total), margin + 380, currentY + 5, { width: 80, align: 'right' }); // Better Y position
