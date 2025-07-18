@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, FolderOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { getCategoryColorByIndex } from '../utils/categoryColors';
@@ -122,14 +122,16 @@ const CategoryManagement = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <div className="flex items-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl blur-sm opacity-30"></div>
-            <div className="relative bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl p-3 shadow-lg">
-              <Tag className="h-6 w-6 text-white" />
-            </div>
-          </div>
-          <div className="ml-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300">Category Management</h2>
+          <img 
+            src="/images/palm-cafe-logo.png" 
+            alt="Palm Cafe Logo" 
+            className="h-10 w-10 mr-3"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-700 dark:text-secondary-300 flex items-center">
+              <FolderOpen className="h-6 w-6 mr-2" />
+              Category Management
+            </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">Organize your menu with categories</p>
           </div>
         </div>
@@ -188,12 +190,11 @@ const CategoryManagement = () => {
         <h3 className="text-lg font-semibold text-secondary-700 dark:text-secondary-300 mb-4">Current Categories</h3>
         {categories.length === 0 ? (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <div className="relative inline-block mb-4">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl blur-sm opacity-30"></div>
-              <div className="relative bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl p-4 shadow-lg">
-                <Tag className="h-12 w-12 text-white" />
-              </div>
-            </div>
+            <img 
+              src="/images/palm-cafe-logo.png" 
+              alt="Palm Cafe Logo" 
+              className="h-16 w-16 mx-auto mb-4 opacity-50"
+            />
             <p>No categories found</p>
             <p className="text-sm">Add your first category to get started</p>
           </div>
@@ -273,12 +274,7 @@ const CategoryManagement = () => {
                         <>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="relative mr-3">
-                                <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg blur-sm opacity-30"></div>
-                                <div className="relative bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg p-2 shadow-md">
-                                  <Tag className="h-4 w-4 text-white" />
-                                </div>
-                              </div>
+                              <FolderOpen className="h-5 w-5 text-secondary-500 mr-3" />
                               <div className="text-sm font-medium text-secondary-700 dark:text-secondary-300">{category.name}</div>
                             </div>
                           </td>
@@ -365,19 +361,14 @@ const CategoryManagement = () => {
                   ) : (
                     // View Mode Mobile
                     <div>
-                                              <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center">
-                            <div className="relative mr-3">
-                              <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg p-2 shadow-md">
-                                <Tag className="h-4 w-4 text-white" />
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-secondary-700 dark:text-secondary-300">{category.name}</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">{category.description}</p>
-                            </div>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center">
+                          <FolderOpen className="h-5 w-5 text-secondary-500 mr-3" />
+                          <div>
+                            <h4 className="font-medium text-secondary-700 dark:text-secondary-300">{category.name}</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{category.description}</p>
                           </div>
+                        </div>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(category)}
