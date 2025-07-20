@@ -185,6 +185,21 @@ async function createDatabase() {
     `);
     console.log('✅ Currency settings history table created');
 
+    // Users table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(200) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('admin', 'user') DEFAULT 'user',
+        last_login TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    console.log('✅ Users table created');
+
     console.log('✅ All tables created successfully');
 
     // Insert initial data
@@ -231,6 +246,18 @@ async function createDatabase() {
         `, [category.name, category.description, category.sort_order]);
       }
       console.log('✅ Sample categories inserted');
+    }
+
+    // Insert default admin user
+    const [existingUsers] = await connection.query('SELECT COUNT(*) as count FROM users');
+    if (existingUsers[0].count === 0) {
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      
+      await connection.query(`
+        INSERT INTO users (username, email, password, role) VALUES ('admin', 'admin@palmcafe.com', ?, 'admin')
+      `, [hashedPassword]);
+      console.log('✅ Default admin user created (username: admin, password: admin123)');
     }
 
     // Insert sample menu items

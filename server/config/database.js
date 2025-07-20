@@ -59,6 +59,20 @@ const initializeDatabase = async () => {
       )
     `);
 
+    // Create users table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(200) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('admin', 'user') DEFAULT 'user',
+        last_login TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+
     // Insert default menu items if table is empty
     const [menuRows] = await connection.execute('SELECT COUNT(*) as count FROM menu_items');
     if (menuRows[0].count === 0) {
@@ -108,6 +122,19 @@ const initializeDatabase = async () => {
         );
       }
       console.log('Default menu items inserted');
+    }
+
+    // Insert default admin user if users table is empty
+    const [userRows] = await connection.execute('SELECT COUNT(*) as count FROM users');
+    if (userRows[0].count === 0) {
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      
+      await connection.execute(
+        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+        ['admin', 'admin@palmcafe.com', hashedPassword, 'admin']
+      );
+      console.log('Default admin user created (username: admin, password: admin123)');
     }
 
     connection.release();

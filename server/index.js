@@ -6,12 +6,15 @@ const { v4: uuidv4 } = require('uuid');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const { initializeDatabase, testConnection } = require('./config/database');
 const MenuItem = require('./models/menuItem');
 const Category = require('./models/category');
 const Invoice = require('./models/invoice');
 const TaxSettings = require('./models/taxSettings');
 const CurrencySettings = require('./models/currencySettings');
+const User = require('./models/user');
+const { auth, adminAuth, JWT_SECRET } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -226,6 +229,96 @@ const generatePDF = async (invoice) => {
     doc.end();
   });
 };
+
+// Authentication Routes
+
+// Register new user
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Validate input
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+
+    // Create new user
+    const user = await User.create({ username, email, password });
+    
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      user: { id: user.id, username: user.username, email: user.email, role: user.role },
+      token
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+// Login user
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Find user by email
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Validate password
+    const isValidPassword = await User.validatePassword(user, password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Update last login
+    await User.updateLastLogin(user.id);
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+
+    res.json({
+      message: 'Login successful',
+      user: { id: user.id, username: user.username, email: user.email, role: user.role },
+      token
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+// Get current user profile
+app.get('/api/auth/profile', auth, async (req, res) => {
+  try {
+    res.json({
+      user: { id: req.user.id, username: req.user.username, email: req.user.email, role: req.user.role }
+    });
+  } catch (error) {
+    console.error('Profile error:', error);
+    res.status(500).json({ error: 'Failed to get profile' });
+  }
+});
 
 // API Routes
 
