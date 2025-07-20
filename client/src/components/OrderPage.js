@@ -199,62 +199,65 @@ const OrderPage = ({ menuItems }) => {
       {/* Menu Items */}
       <div className="lg:col-span-2 mb-6 lg:mb-0">
         <div className="card">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-8">
             <img 
               src="/images/palm-cafe-logo.png" 
               alt="Palm Cafe Logo" 
-              className="h-16 w-16 mr-4"
+              className="h-20 w-20 mr-6"
             />
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-secondary-700 dark:text-secondary-300">Menu Items</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Select items to add to your order</p>
+              <h2 className="text-3xl font-bold text-secondary-700 dark:text-secondary-300 mb-2">Menu Items</h2>
+              <p className="text-base text-gray-600 dark:text-gray-400">Click on any item to add it to your cart</p>
             </div>
           </div>
           
           {Object.keys(groupedMenuItems).length === 0 ? (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <img 
                 src="/images/palm-cafe-logo.png" 
                 alt="Palm Cafe Logo" 
-                className="h-16 w-16 mx-auto mb-4 opacity-50"
+                className="h-24 w-24 mx-auto mb-6 opacity-50"
               />
-              <p>No menu items available</p>
-              <p className="text-sm">Add items in Menu Management</p>
+              <h3 className="text-xl font-semibold mb-2">No menu items available</h3>
+              <p className="text-base">Add items in Menu Management to get started</p>
             </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
               {Object.entries(groupedMenuItems).map(([categoryName, items], index) => {
                 const categoryColor = getCategoryColor(categoryName, index);
                 return (
-                <div key={categoryName} className={`border ${categoryColor.border} rounded-lg p-3 sm:p-4 ${categoryColor.bg}`}>
-                  <h3 className={`text-lg font-semibold ${categoryColor.text} mb-3 sm:mb-4 flex items-center`}>
-                    <FolderOpen className={`h-5 w-5 mr-2 ${categoryColor.text}`} />
+                <div key={categoryName} className={`border ${categoryColor.border} rounded-xl p-4 sm:p-6 ${categoryColor.bg} shadow-sm`}>
+                  <h3 className={`text-xl font-bold ${categoryColor.text} mb-4 sm:mb-6 flex items-center`}>
+                    <FolderOpen className={`h-6 w-6 mr-3 ${categoryColor.text}`} />
                     {categoryName}
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className={`border ${categoryColor.border} rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer ${categoryColor.bg} hover:${categoryColor.hover}`}
+                        className={`group relative border ${categoryColor.border} rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all duration-300 cursor-pointer ${categoryColor.bg} hover:${categoryColor.hover} hover:scale-105 transform`}
                         onClick={() => addToCart(item)}
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className={`font-medium ${categoryColor.text} text-sm sm:text-base`}>{item.name}</h4>
-                          <span className={`text-base sm:text-lg font-semibold ${categoryColor.text}`}>
+                        {/* Add to cart indicator */}
+                        <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white dark:bg-gray-800 rounded-full p-2 shadow-md ${categoryColor.border}`}>
+                          <Plus className={`h-4 w-4 ${categoryColor.text}`} />
+                        </div>
+                        
+                        <div className="flex justify-between items-start mb-3">
+                          <h4 className={`font-semibold ${categoryColor.text} text-sm sm:text-base leading-tight`}>
+                            {item.name}
+                          </h4>
+                          <span className={`text-lg sm:text-xl font-bold ${categoryColor.text} ml-2`}>
                             {formatCurrency(ensureNumber(item.price))}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">{item.description}</p>
-                        <button
-                          className="btn-primary w-full flex items-center justify-center text-sm sm:text-base py-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(item);
-                          }}
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add to Cart
-                        </button>
+                        
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                          {item.description}
+                        </p>
+                        
+                        {/* Hover effect overlay */}
+                        <div className={`absolute inset-0 rounded-xl bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}></div>
                       </div>
                     ))}
                   </div>
