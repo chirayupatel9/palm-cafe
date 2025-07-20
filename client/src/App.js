@@ -13,7 +13,7 @@ import CurrencySettings from './components/CurrencySettings';
 import DarkModeToggle from './components/DarkModeToggle';
 
 // Configure axios base URL - use environment variable or fallback to localhost
-const API_BASE_URL = 'http://192.168.1.21:5000' || 'http://100.84.167.120:5000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 axios.defaults.baseURL = `${API_BASE_URL}/api`;
 
 function App() {
