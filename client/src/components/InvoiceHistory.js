@@ -22,6 +22,7 @@ const InvoiceHistory = () => {
   const fetchInvoices = async () => {
     try {
       const response = await axios.get('/invoices');
+      console.log('Fetched invoices:', response.data);
       setInvoices(response.data);
     } catch (error) {
       console.error('Error fetching invoices:', error);
@@ -41,7 +42,14 @@ const InvoiceHistory = () => {
   };
 
   const openInvoice = async (invoiceNumber) => {
+    if (!invoiceNumber) {
+      console.error('Invoice number is undefined');
+      toast.error('Invalid invoice number');
+      return;
+    }
+    
     try {
+      console.log('Opening invoice:', invoiceNumber);
       const response = await axios.get(`/invoices/${invoiceNumber}/download`);
       
       // Create blob and open PDF in new tab
@@ -72,6 +80,11 @@ const InvoiceHistory = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Helper function to get invoice number from different possible property names
+  const getInvoiceNumber = (invoice) => {
+    return invoice.invoice_number || invoice.invoiceNumber || invoice.id || 'Unknown';
   };
 
   if (loading) {
@@ -148,10 +161,10 @@ const InvoiceHistory = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-accent-200">
                   {invoices.map((invoice) => (
-                    <tr key={invoice.invoiceNumber} className="hover:bg-accent-50">
+                    <tr key={getInvoiceNumber(invoice)} className="hover:bg-accent-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-secondary-700 dark:text-secondary-300">
-                          #{invoice.invoiceNumber}
+                          #{getInvoiceNumber(invoice)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -203,7 +216,7 @@ const InvoiceHistory = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
-                          onClick={() => openInvoice(invoice.invoiceNumber)}
+                          onClick={() => openInvoice(getInvoiceNumber(invoice))}
                           className="text-secondary-600 hover:text-secondary-900 flex items-center justify-end w-full"
                           title="Open Invoice"
                         >
@@ -219,17 +232,17 @@ const InvoiceHistory = () => {
             {/* Mobile Cards */}
             <div className="lg:hidden space-y-3">
               {invoices.map((invoice) => (
-                <div key={invoice.invoiceNumber} className="border border-accent-200 rounded-lg p-4 bg-white">
+                <div key={getInvoiceNumber(invoice)} className="border border-accent-200 rounded-lg p-4 bg-white">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center">
                       <Calendar className="h-5 w-5 text-secondary-500 mr-2" />
                       <div>
-                        <h4 className="font-medium text-secondary-700 dark:text-secondary-300">#{invoice.invoiceNumber}</h4>
+                        <h4 className="font-medium text-secondary-700 dark:text-secondary-300">#{getInvoiceNumber(invoice)}</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(invoice.date)}</p>
                       </div>
                     </div>
                     <button
-                      onClick={() => openInvoice(invoice.invoiceNumber)}
+                      onClick={() => openInvoice(getInvoiceNumber(invoice))}
                       className="p-2 text-secondary-600 hover:text-secondary-900 bg-secondary-50 rounded-full"
                       title="Open Invoice"
                     >
