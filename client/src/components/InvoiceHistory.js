@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Download, Calendar, User, DollarSign, Percent, Heart } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const InvoiceHistory = () => {
+  const { formatCurrency, currencySettings } = useCurrency();
   const [invoices, setInvoices] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Debug logging
+  console.log('InvoiceHistory - Currency Settings:', currencySettings);
+  console.log('InvoiceHistory - formatCurrency function:', formatCurrency);
 
   useEffect(() => {
     fetchInvoices();
@@ -181,18 +187,17 @@ const InvoiceHistory = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 text-secondary-400 mr-1" />
                           <div className="text-sm font-semibold text-secondary-600">
-                            {invoice.total.toFixed(2)}
+                            {formatCurrency(invoice.total)}
                           </div>
                         </div>
                         {/* Show tax and tip breakdown */}
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {invoice.tax_amount > 0 && (
-                            <div>Tax: ${invoice.tax_amount.toFixed(2)}</div>
+                            <div>Tax: {formatCurrency(invoice.tax_amount)}</div>
                           )}
                           {invoice.tip_amount > 0 && (
-                            <div>Tip: ${invoice.tip_amount.toFixed(2)}</div>
+                            <div>Tip: {formatCurrency(invoice.tip_amount)}</div>
                           )}
                         </div>
                       </td>
@@ -252,22 +257,21 @@ const InvoiceHistory = () => {
                       </p>
                     </div>
                     
-                    <div className="flex justify-between items-center pt-2 border-t border-accent-100">
-                      <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 text-secondary-400 mr-1" />
-                        <span className="text-sm font-semibold text-secondary-600">
-                          ${invoice.total.toFixed(2)}
-                        </span>
+                                          <div className="flex justify-between items-center pt-2 border-t border-accent-100">
+                        <div className="flex items-center">
+                          <span className="text-sm font-semibold text-secondary-600">
+                            {formatCurrency(invoice.total)}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {invoice.tax_amount > 0 && (
+                            <span className="mr-2">Tax: {formatCurrency(invoice.tax_amount)}</span>
+                          )}
+                          {invoice.tip_amount > 0 && (
+                            <span>Tip: {formatCurrency(invoice.tip_amount)}</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {invoice.tax_amount > 0 && (
-                          <span className="mr-2">Tax: ${invoice.tax_amount.toFixed(2)}</span>
-                        )}
-                        {invoice.tip_amount > 0 && (
-                          <span>Tip: ${invoice.tip_amount.toFixed(2)}</span>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 </div>
               ))}
@@ -282,12 +286,14 @@ const InvoiceHistory = () => {
           <div className="card">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-secondary-500" />
+                <div className="h-6 w-6 sm:h-8 sm:w-8 bg-secondary-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs sm:text-sm font-bold">{currencySettings.currency_symbol}</span>
+                </div>
               </div>
               <div className="ml-3 sm:ml-4">
                 <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</div>
                 <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
-                  ${statistics.totalRevenue.toFixed(2)}
+                  {formatCurrency(statistics.totalRevenue)}
                 </div>
               </div>
             </div>
@@ -329,7 +335,7 @@ const InvoiceHistory = () => {
               <div className="ml-3 sm:ml-4">
                 <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Tax Collected</div>
                 <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
-                  ${statistics.totalTax.toFixed(2)}
+                  {formatCurrency(statistics.totalTax)}
                 </div>
               </div>
             </div>
@@ -343,7 +349,7 @@ const InvoiceHistory = () => {
               <div className="ml-3 sm:ml-4">
                 <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Tips</div>
                 <div className="text-lg sm:text-2xl font-semibold text-secondary-700 dark:text-secondary-300">
-                  ${statistics.totalTips.toFixed(2)}
+                  {formatCurrency(statistics.totalTips)}
                 </div>
               </div>
             </div>
